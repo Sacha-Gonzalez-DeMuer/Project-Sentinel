@@ -26,7 +26,7 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 			if(Cast<AZombSentinel>(Sentinel)) 
 			{
 				AddThreat(Sentinel);
-				SetTarget(SeenPawn);
+				SetTarget(Sentinel);
 			} else
 			{
 				int SSFactionIdx = Sentinel->GetFaction();
@@ -37,11 +37,17 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 					AddThreat(Sentinel);
 				}
 			}
-			
 		}
 		else
 		{
 			UE_LOG(LogTemp, Log, TEXT("Seen unknown pawn"));
 		}
 	}
+}
+
+void AGuardianController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UpdateRetargetingTimer(DeltaSeconds);
 }

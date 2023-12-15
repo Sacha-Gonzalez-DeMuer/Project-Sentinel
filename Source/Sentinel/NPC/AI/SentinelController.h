@@ -28,9 +28,8 @@ public:
 	virtual void OnSeePawn(APawn* SeenPawn);
 
 	bool IsAttacking() const;
-	void SetTarget(APawn* NewTarget) const;
-	void UpdatePrincipal(ASentinelCharacter* NewPrincipal) const;
-	void UpdateTarget(ASentinelCharacter* NewTarget) const;
+	void SetTarget(ASentinelCharacter* NewTarget) const;
+	void SetPrincipal(ASentinelCharacter* NewPrincipal) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	TObjectPtr<UBehaviorTree> BehaviorTree;
@@ -49,13 +48,27 @@ public:
 
 	float GetThreatToTarget() const;
 	float GetThreatToPrincipal() const;
+	FVector GetThreatLocation() const;
+
+	UFUNCTION()
+	void DisableBehaviorTree();
+
+	UFUNCTION()
+	void EnableBehaviorTree();
+
+	UFUNCTION()
+	void OnDeath();
 	
 protected:
 
 	bool HasTarget() const;
+	ASentinelCharacter* GetCurrentThreat() const;
+	
 	void AddThreat(ASentinelCharacter* NewThreat);
 	void SetAttacking(bool Attacking);
 
+	void UpdateRetargetingTimer(float DeltaSeconds);
+	void UpdateThreatToTargetTimer(float DeltaSeconds);
 	
 	UPROPERTY()
 	ANPCBase* NPCBase;

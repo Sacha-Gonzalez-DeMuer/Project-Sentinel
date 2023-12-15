@@ -4,22 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Sentinel/NPC/AI/SentinelController.h"
-#include "GuardianController.generated.h"
+#include "ZombController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SENTINEL_API AGuardianController : public ASentinelController
+class SENTINEL_API AZombController : public ASentinelController
 {
 	GENERATED_BODY()
 
 public:
-	AGuardianController(FObjectInitializer const& objectInit = FObjectInitializer::Get());
-
-	virtual void OnSeePawn(APawn* SeenPawn) override;
-
 	virtual void Tick(float DeltaSeconds) override;
-private:
-	
 };

@@ -38,6 +38,7 @@ bool ANPCBase::IsPlayerPrincipal() const
 
 void ANPCBase::Attack(const ASentinelCharacter* Target, float Damage)
 {
+	UE_LOG(LogTemp, Log, TEXT("Attacking target, Attacker %s"), *GetName());
 	Target->GetHealthComponent()->TakeDamage(Damage);
 }
 
@@ -46,14 +47,8 @@ void ANPCBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HealthComponent->OnDeath.AddDynamic(this, &ANPCBase::OnDeath);
 }
 
-// Called every frame
-void ANPCBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
 
 // Called to bind functionality to input
 void ANPCBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -77,5 +72,5 @@ void ANPCBase::OnAttackColliderEnter(AActor* OtherActor)
 
 void ANPCBase::OnDeath()
 {
-	Destroy();
+	SentinelController->OnDeath();
 }

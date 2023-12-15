@@ -7,6 +7,7 @@
 #include "Sentinel/NPC/NPCBase.h"
 #include "ZombSentinel.generated.h"
 
+class AZombController;
 /**
  * 
  */
@@ -23,6 +24,15 @@ protected:
 		meta = (AllowPrivateAccess = "true", ToolTip = "This collider will update the Sentinels target"))
 	USphereComponent* RetargetCollision;
 
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void OnRetargetEnter(AActor* OtherActor);
+
+
+	virtual void OnDeath() override;
+private:
+
+	UPROPERTY()
+	AZombController* ZombController;
 };

@@ -34,7 +34,7 @@ ASentinelCharacter::ASentinelCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	// Create Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 }
 
 void ASentinelCharacter::Tick(float DeltaSeconds)

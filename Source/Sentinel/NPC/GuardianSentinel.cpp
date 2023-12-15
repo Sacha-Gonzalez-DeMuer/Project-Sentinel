@@ -5,6 +5,7 @@
 
 #include "AI/GuardianController.h"
 #include "Components/SphereComponent.h"
+#include "Sentinel/Components/HealthComponent.h"
 
 AGuardianSentinel::AGuardianSentinel()
 {
@@ -20,12 +21,26 @@ AGuardianSentinel::AGuardianSentinel()
 void AGuardianSentinel::OnSeePawn(APawn* SeenPawn)
 {
 	if(GuardianController) GuardianController->OnSeePawn(SeenPawn);
-	else UE_LOG(LogTemp, Error, TEXT("Controller not linked"));
+	else
+	{
+		GuardianController = Cast<AGuardianController>(GetController());
+		if(!GuardianController)
+			UE_LOG(LogTemp, Error, TEXT("Controller not linked"));
+	}
 }
 
 void AGuardianSentinel::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(!HealthComponent)
+		HealthComponent = GetComponentByClass<UHealthComponent>();
 	
-	GuardianController = Cast<AGuardianController>(GetController());
+	//GuardianController = Cast<AGuardianController>(GetController());
+}
+
+void AGuardianSentinel::OnDeath()
+{
+	GuardianController->DisableBehaviorTree();
+	Destroy();
 }

@@ -8,6 +8,7 @@
 
 class ASentinelController;
 class UHealthComponent;
+class UWidgetComponent;
 
 UCLASS(Blueprintable)
 class ASentinelCharacter : public ACharacter
@@ -28,6 +29,7 @@ public:
 	void SetSquad(int NewSquadIdx);
 
 	ASentinelController* GetSentinelController() const;
+
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI",  meta = (AllowPrivateAccess = "true"),

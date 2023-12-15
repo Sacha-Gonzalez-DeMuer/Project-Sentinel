@@ -60,6 +60,11 @@ int UHealthComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
+float UHealthComponent::GetHealthInPercent() const
+{
+	return static_cast<float>(CurrentHealth) / MaxHealth;
+}
+
 
 // Called when the game starts
 void UHealthComponent::BeginPlay()

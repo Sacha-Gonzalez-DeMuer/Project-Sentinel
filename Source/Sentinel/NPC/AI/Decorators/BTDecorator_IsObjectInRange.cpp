@@ -5,23 +5,45 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Sentinel/SentinelCharacter.h"
 
 UBTDecorator_IsObjectInRange::UBTDecorator_IsObjectInRange()
 {
 	NodeName = TEXT("Is [OBJECT] in Range");
 }
 
-bool UBTDecorator_IsObjectInRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp,
-	uint8* NodeMemory) const
+bool UBTDecorator_IsObjectInRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	// Get the target pawn from the blackboard
-	const AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetKey.SelectedKeyName));
-	if (Target == nullptr)
+	if(!IsValid(OwnerComp.GetOwner())) return false;
+	
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	if (Blackboard == nullptr)
 	{
 		return false;
 	}
-	
-	// Check if the target pawn is within range
-	const float Distance = FVector::Dist(Target->GetActorLocation(), OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation());
-	return Distance <= Range;
+
+	// Get the target pawn from the blackboard
+	auto bbTarget = Blackboard->GetValueAsObject(TargetKey.SelectedKeyName);
+	if (!bbTarget) return false;
+
+	AActor* Target = Cast<AActor>(bbTarget);
+	if (Target == nullptr || !Target->IsValidLowLevel())
+	{
+		return false;
+	}
+
+	// Check if the target actor is within range
+	const FVector TargetLocation = Target->GetActorLocation();
+
+	// Check if AI owner and its pawn are valid
+	APawn* AIOwnerPawn = OwnerComp.GetAIOwner()->GetPawn();
+	if (AIOwnerPawn == nullptr || !AIOwnerPawn->IsValidLowLevel())
+	{
+		return false;
+	}
+
+	const FVector AIOwnerLocation = AIOwnerPawn->GetActorLocation();
+	const float DistanceSquared = FVector::DistSquared(TargetLocation, AIOwnerLocation);
+
+	return DistanceSquared <= FMath::Square(Range);
 }

@@ -23,7 +23,7 @@ public:
 	bool IsPlayerTarget() const;
 	bool IsPlayerPrincipal() const;
 
-	static void Attack(const ASentinelCharacter* Target, float Damage);
+	void Attack(const ASentinelCharacter* Target, float Damage);
 	
 protected:
 	// Called when the game starts or when spawned
@@ -47,20 +47,20 @@ protected:
 
 	UPROPERTY()
 	ASentinelController* SentinelController;
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
+public:	
+
+	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
 	virtual void OnSeePawn(APawn* SeenPawn);
+	
 
 	UFUNCTION(BlueprintCallable)
 	void OnAttackColliderEnter(AActor* OtherActor);
 
 	UFUNCTION()
-	void OnDeath();
-	
+	virtual void OnDeath();
 };

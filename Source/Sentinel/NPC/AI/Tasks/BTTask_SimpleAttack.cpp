@@ -19,16 +19,16 @@ UBTTask_SimpleAttack::UBTTask_SimpleAttack()
 
 EBTNodeResult::Type UBTTask_SimpleAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UE_LOG(LogTemp, Log, TEXT("Simple attack!"));
+
 	const UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	if (const ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(Blackboard->GetValueAsObject(TargetKey.SelectedKeyName)))
 	{
-		const ANPCBase* NPC = Cast<ANPCBase>(Blackboard->GetValueAsObject(FName(BBKeys::SelfActor)));
+		ANPCBase* NPC = Cast<ANPCBase>(Blackboard->GetValueAsObject(FName(BBKeys::SelfActor)));
 		NPC->Attack(Sentinel, Damage);
 
-		
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return EBTNodeResult::Succeeded;
-
 	}
    
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);

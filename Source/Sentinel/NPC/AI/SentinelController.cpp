@@ -32,6 +32,7 @@ void ASentinelController::BeginPlay()
 	if (APawn* ControlledPawn = GetPawn())
 		NPCBase = Cast<ANPCBase>(ControlledPawn);
 
+
 	if (IsValid(BehaviorTree.Get()))
 	{
 		RunBehaviorTree(BehaviorTree.Get());
@@ -45,37 +46,31 @@ void ASentinelController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// Retargeting timer
-	if (RetargetingIntervalTimer > 0)
-	{
-		RetargetingIntervalTimer -= DeltaSeconds;
-		if (RetargetingIntervalTimer <= 0)
-		{
-			RecalculateTargetPriority();
-			RetargetingIntervalTimer = RetargetingInterval;
-		}
-	}
 
-	// Threat calculation timer
-	if (ThreatUpdateTimer > 0)
-	{
-		ThreatUpdateTimer -= DeltaSeconds;
-		if (ThreatUpdateTimer <= 0)
-		{
-			RecalculateThreatToTarget();
-			ThreatUpdateTimer = ThreatUpdateInterval;
-		}
-	}
 }
 
-void ASentinelController::UpdatePrincipal(ASentinelCharacter* NewPrincipal) const
+void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
 {
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentPrincipal), NewPrincipal);
 }
 
-void ASentinelController::UpdateTarget(ASentinelCharacter* NewTarget) const
+void ASentinelController::SetTarget(ASentinelCharacter* NewTarget) const
 {
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), NewTarget);
+
+	// Print the name of the target
+	FString TargetName = NewTarget ? NewTarget->GetName() : TEXT("None");
+	UE_LOG(LogTemp, Warning, TEXT("Target set to: %s"), *TargetName);
+
+	// Check if the object is set
+	if (BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)) == NewTarget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Target successfully set"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to set the target"));
+	}
 }
 
 void ASentinelController::OnSeePawn(APawn* SeenPawn)
@@ -115,9 +110,43 @@ float ASentinelController::GetThreatToPrincipal() const
 	return ThreatToPrincipal;
 }
 
+FVector ASentinelController::GetThreatLocation() const
+{
+	if(const ASentinelCharacter* Threat = GetCurrentThreat())
+		return Threat->GetActorLocation();
+
+	// no threat found
+	return NPCBase->GetActorLocation();
+}
+
+void ASentinelController::DisableBehaviorTree()
+{
+	if (BehaviorTreeComponent)
+		BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
+}
+
+void ASentinelController::EnableBehaviorTree()
+{
+	if (BehaviorTreeComponent && BehaviorTree) 
+	{
+		BehaviorTreeComponent->StartTree(*BehaviorTree, EBTExecutionMode::Looped);
+	}
+}
+
+void ASentinelController::OnDeath()
+{
+	BlackboardComponent->SetValueAsBool(FName(BBKeys::IsAlive), false);
+	DisableBehaviorTree();
+}
+
 bool ASentinelController::HasTarget() const
 {
 	return BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)) != nullptr;
+}
+
+ASentinelCharacter* ASentinelController::GetCurrentThreat() const
+{
+	return Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)));
 }
 
 void ASentinelController::AddThreat(ASentinelCharacter* NewThreat)
@@ -128,6 +157,34 @@ void ASentinelController::AddThreat(ASentinelCharacter* NewThreat)
 void ASentinelController::SetAttacking(bool Attacking)
 {
 	bIsAttacking = Attacking;
+}
+
+void ASentinelController::UpdateRetargetingTimer(float DeltaSeconds)
+{
+	// Retargeting timer
+	if (RetargetingIntervalTimer > 0)
+	{
+		RetargetingIntervalTimer -= DeltaSeconds;
+		if (RetargetingIntervalTimer <= 0)
+		{
+			RecalculateTargetPriority();
+			RetargetingIntervalTimer = RetargetingInterval;
+		}
+	}
+}
+
+void ASentinelController::UpdateThreatToTargetTimer(float DeltaSeconds)
+{
+	// Threat calculation timer
+	if (ThreatUpdateTimer > 0)
+	{
+		ThreatUpdateTimer -= DeltaSeconds;
+		if (ThreatUpdateTimer <= 0)
+		{
+			RecalculateThreatToTarget();
+			ThreatUpdateTimer = ThreatUpdateInterval;
+		}
+	}
 }
 
 bool ASentinelController::IsAttacking() const
@@ -145,6 +202,9 @@ void ASentinelController::InitializeBlackboardKeys()
 			UE_LOG(LogTemp, Error, TEXT("NPCBase not linked to SentinelControllers Blackboard."));
 
 
+		BlackboardComponent->SetValueAsBool(FName(BBKeys::IsAlive), true);
+		
+		
 		if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 		{
 			if (NPCBase->IsPlayerTarget())
@@ -241,12 +301,6 @@ float ASentinelController::EvaluateThreatToTarget() const
 	return 0;
 }
 
-void ASentinelController::SetTarget(APawn* NewTarget) const
-{
-	UE_LOG(LogTemp, Log, TEXT("New target set."));
-	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), NewTarget);
-}
-
 
 void ASentinelController::RecalculateTargetPriority()
 {
@@ -256,11 +310,13 @@ void ASentinelController::RecalculateTargetPriority()
 		float HighestPriority = TNumericLimits<float>::Min();
 		ASentinelCharacter* HighestPriorityThreat = nullptr;
 
+		TArray<ASentinelCharacter*> ThreatsToRemove;
+		
 		for (ASentinelCharacter* Threat : SeenThreats)
 		{
 			if(!IsValid(Threat))
 			{
-				SeenThreats.Remove(Threat);
+				ThreatsToRemove.Add(Threat);
 				continue;
 			}
 			
@@ -275,6 +331,10 @@ void ASentinelController::RecalculateTargetPriority()
 			}
 		}
 
+		for(const ASentinelCharacter* ToRemove : ThreatsToRemove)
+		{
+			SeenThreats.Remove(ToRemove);
+		}
 		// Set the highest priority threat as the target
 		SetTarget(HighestPriorityThreat);
 	}
@@ -290,7 +350,6 @@ void ASentinelController::RecalculateThreatToTarget()
 	{
 		float BaseThreat = 2000.0f;  // Adjust this as needed
 		ThreatToTarget = BaseThreat / (Pathing->GetRemainingPathCost() + 1.0f);  // Adding 1 to avoid division by zero
-		UE_LOG(LogTemp, Log, TEXT("Threat to target %f"), ThreatToTarget);
 	}
 }
 

@@ -8,5 +8,5 @@ namespace BBKeys
 	TCHAR const* const CurrentTarget = TEXT("CurrentTarget");
 	TCHAR const* const Player = TEXT("Player");
 	TCHAR const* const SelfActor = TEXT("SelfActor");
-
+	TCHAR const* const IsAlive = TEXT("IsAlive");
 }

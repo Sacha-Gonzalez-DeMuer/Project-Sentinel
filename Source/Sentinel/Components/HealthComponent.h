@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetMaxHealth() const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetHealthInPercent() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
