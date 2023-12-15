@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SentinelCharacter.generated.h"
 
+class ASentinelDirector;
 class ASentinelController;
 class UHealthComponent;
 class UWidgetComponent;
@@ -20,6 +21,7 @@ public:
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 
 	UHealthComponent* GetHealthComponent() const;
 	int GetFaction() const;
@@ -42,5 +44,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
+
+
+private:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	ASentinelDirector* SentinelDirector;
 };
 

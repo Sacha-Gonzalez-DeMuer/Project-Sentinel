@@ -12,11 +12,11 @@
 
 UBTTask_BlockThreat::UBTTask_BlockThreat()
 	: DistanceInFrontOfPrincipal(600.0f)
-	, NPC(nullptr)
 	, AvoidanceWeight(.5f)
+	, NPC(nullptr)
 	, NPCController(nullptr)
-	, Principal(nullptr)
 	, MaxAvoidanceDistance(500.0f)
+	, Principal(nullptr)
 	, MinDistanceToThreat(300.0f)
 
 {

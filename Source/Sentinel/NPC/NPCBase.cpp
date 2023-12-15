@@ -49,7 +49,6 @@ void ANPCBase::BeginPlay()
 
 }
 
-
 // Called to bind functionality to input
 void ANPCBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
