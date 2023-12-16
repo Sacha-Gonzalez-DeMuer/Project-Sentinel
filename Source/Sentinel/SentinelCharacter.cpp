@@ -47,7 +47,7 @@ void ASentinelCharacter::BeginPlay()
 
 	if(!SentinelDirector)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Director not linked to character"));
+		UE_LOG(LogTemp, Error, TEXT("Director not linked to SentinelCharacter"));
 	}
 	else
 	{

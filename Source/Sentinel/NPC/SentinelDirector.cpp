@@ -29,41 +29,125 @@ void ASentinelDirector::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
 void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
 {
-	int FactionIdx = Sentinel->GetFaction();
-	int SquadIdx = Sentinel->GetSquad();
+    UE_LOG(LogTemp, Log, TEXT(" SQUAD"))
+    
+    // 1. Ensure that Sentinel is not nullptr
+    if (!Sentinel)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Sentinel is nullptr. Cannot proceed."));
+        return;
+    }
 
-	ASentinelFaction* Faction = Factions[FactionIdx];
-	if(!Faction)
-	{
-		Faction = CreateFaction(FactionIdx);
-		Faction->GetSquad(SquadIdx)->AddSentinel(Sentinel);
-	}
+    int FactionIdx = Sentinel->GetFaction();
+    int SquadIdx = Sentinel->GetSquad();
+
+    // 2. Ensure that FactionIdx is non-negative
+    if (FactionIdx < 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid FactionIdx (%d). Cannot proceed."), FactionIdx);
+        return;
+    }
+
+    // 3. Ensure that SquadIdx is non-negative
+    if (SquadIdx < 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid SquadIdx (%d). Cannot proceed."), SquadIdx);
+        return;
+    }
+
+    // Ensure the array is large enough
+    // 4. Ensure Factions.Num() is non-negative before taking its maximum
+    int32 NewArraySize = FMath::Max(Factions.Num(), FactionIdx + 1);
+    if (NewArraySize < 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid array size. Cannot proceed."));
+        return;
+    }
+    Factions.SetNum(NewArraySize, false);
+
+    // 5. Ensure FactionIdx is within the bounds of the Factions array
+    if (FactionIdx >= Factions.Num())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FactionIdx (%d) out of bounds. Cannot proceed."), FactionIdx);
+        return;
+    }
+
+    ASentinelFaction* Faction = Factions[FactionIdx];
+    if (!Faction)
+    {
+        // 6. Handle the case where CreateFaction returns nullptr
+        Faction = CreateFaction(FactionIdx);
+        if (!Faction)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to create Faction. Cannot proceed."));
+            return;
+        }
+    }
+
+    auto Squad = Faction->GetSquad(SquadIdx);
+
+    if (Squad)
+    {
+        UE_LOG(LogTemp, Log, TEXT("GOT SQUAD"))
+    }
+    else
+    {
+        UE_LOG(LogTemp, Log, TEXT("WHERE D SQUAD"));
+    }
+
+    // 7. Ensure Squad is not nullptr before calling AddSentinel
+    if (Squad)
+    {
+        Squad->AddSentinel(Sentinel);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Squad is nullptr. Cannot add Sentinel."));
+    }
 }
-
 ASentinelFaction* ASentinelDirector::CreateFaction(int FactionIdx)
 {
-	// Check if the faction already exists
-	for (ASentinelFaction* Faction : Factions)
+	UE_LOG(LogTemp, Warning, TEXT("Creating Faction %d"), FactionIdx);
+
+	// 1. Ensure that FactionIdx is non-negative
+	if (FactionIdx < 0)
 	{
-		if (Faction->GetFactionIdx() == FactionIdx)
-		{
-			// Faction already exists, no need to create a new one
-			return Faction;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Invalid FactionIdx (%d). Cannot create faction."), FactionIdx);
+		return nullptr;
+	}
+
+	// Check if the faction already exists
+	// 2. Ensure FactionIdx is within the bounds of the Factions array
+	if (FactionIdx < Factions.Num() && Factions[FactionIdx] != nullptr)
+	{
+		return Factions[FactionIdx];
 	}
 
 	// Create a new faction
-	ASentinelFaction* NewFaction = GetWorld()->SpawnActor<ASentinelFaction>(ASentinelFaction::StaticClass());
+	ASentinelFaction* NewFaction = GetWorld()->SpawnActor<ASentinelFaction>(FactionClass);
 	if (NewFaction)
 	{
 		// Initialize the faction
 		NewFaction->SetFactionIdx(FactionIdx);
 
 		// Ensure the array is large enough
-		Factions.SetNum(FMath::Max(Factions.Num(), FactionIdx + 1));
+		// 3. Ensure Factions.Num() is non-negative before taking its maximum
+		int32 NewArraySize = FMath::Max(Factions.Num(), FactionIdx + 1);
+		if (NewArraySize < 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Invalid array size. Cannot proceed."));
+			return nullptr;
+		}
+		Factions.SetNum(NewArraySize);
+
+		// 4. Ensure FactionIdx is within the bounds of the Factions array after resizing
+		if (FactionIdx >= Factions.Num())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FactionIdx (%d) out of bounds after resizing. Cannot proceed."), FactionIdx);
+			return nullptr;
+		}
 
 		// Add the new faction at the specified index
 		Factions[FactionIdx] = NewFaction;
@@ -72,6 +156,13 @@ ASentinelFaction* ASentinelDirector::CreateFaction(int FactionIdx)
 		return NewFaction;
 	}
 
+	// Log more details about the spawning failure
+	UE_LOG(LogTemp, Warning, TEXT("Failed to spawn ASentinelFaction. Class: %s, Location: %s, Rotation: %s"),
+		*FactionClass->GetName(),
+		*GetActorLocation().ToString(),
+		*GetActorRotation().ToString()
+	);
+	
 	return nullptr;
 }
 

@@ -22,7 +22,7 @@ public:
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
-
+	
 	UHealthComponent* GetHealthComponent() const;
 	int GetFaction() const;
 	int GetSquad() const;
@@ -48,7 +48,7 @@ protected:
 
 private:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ASentinelDirector* SentinelDirector;
 };
 

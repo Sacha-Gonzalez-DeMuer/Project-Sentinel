@@ -7,6 +7,7 @@
 
 // Sets default values
 ASentinelFaction::ASentinelFaction()
+	: FactionIdx(0)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -40,27 +41,27 @@ int ASentinelFaction::GetFactionIdx() const
 
 ASentinelSquad* ASentinelFaction::GetSquad(int SquadIdx)
 {
-	if (Squads.IsValidIndex(SquadIdx))
-	{
-		return Squads[SquadIdx];
-	}
-	else
-	{
-		// Ensure the array is large enough to accommodate the new squad
-		Squads.SetNum(FMath::Max(Squads.Num(), SquadIdx + 1));
+	if(SquadIdx < Squads.Num() && Squads[SquadIdx] != nullptr) return Squads[SquadIdx];
 
-		// Create a new squad
-		ASentinelSquad* NewSquad = GetWorld()->SpawnActor<ASentinelSquad>(ASentinelSquad::StaticClass());
-
-		// Initialize the new squad with SquadIdx or other data
+	// Create a new Squad
+	ASentinelSquad* NewSquad = GetWorld()->SpawnActor<ASentinelSquad>(SquadType);
+	if (NewSquad)
+	{
+		// Initialize the Squad
 		NewSquad->SetIdx(FactionIdx, SquadIdx);
 
-		// Assign the new squad to the array
-		Squads[SquadIdx] = NewSquad;
-		UE_LOG(LogTemp, Log, TEXT("Squad Created"));
+		// Ensure the array is large enough
+		Squads.SetNum(FMath::Max(Squads.Num(), SquadIdx + 1));
 
+		// Add the new Squad at the specified index
+		Squads[SquadIdx] = NewSquad;
+
+		UE_LOG(LogTemp, Log, TEXT("Squad Created"));
 		return NewSquad;
 	}
+
+	return nullptr;
+	
 }
 
 

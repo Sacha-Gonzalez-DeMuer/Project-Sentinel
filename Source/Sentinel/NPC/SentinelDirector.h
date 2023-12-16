@@ -24,6 +24,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASentinelFaction> FactionClass;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -41,6 +44,5 @@ private:
 	int MaxSquads;
 	
 	TArray<ASentinelFaction*> Factions;
-
 
 };
