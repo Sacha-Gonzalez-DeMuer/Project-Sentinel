@@ -36,8 +36,11 @@ public:
 	float DamageToDeal;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnOverlapBegin(AActor* OtherActor);
+	virtual void DealDamage(AActor* OtherActor);
 
+	UFUNCTION(BlueprintCallable)
+	virtual void Heal(AActor* OtherActor);
+	
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
     

@@ -9,4 +9,7 @@ namespace BBKeys
 	TCHAR const* const Player = TEXT("Player");
 	TCHAR const* const SelfActor = TEXT("SelfActor");
 	TCHAR const* const IsAlive = TEXT("IsAlive");
+	TCHAR const* const Faction = TEXT("Faction");
+	TCHAR const* const Squad = TEXT("Squad");
+	TCHAR const* const Role = TEXT("Role");
 }

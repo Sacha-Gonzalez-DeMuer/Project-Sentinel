@@ -34,3 +34,4 @@ EBTNodeResult::Type UBTTask_SimpleAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	return EBTNodeResult::Failed;
 }
+

@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SentinelCharacter.h"
+
+#include "Actors/SentinelSquad.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/HealthComponent.h"
@@ -34,6 +36,7 @@ ASentinelCharacter::ASentinelCharacter()
 
 	// Create Health Component
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
+	HealthComponent->SetParentCharacter(this);
 }
 
 void ASentinelCharacter::Tick(float DeltaSeconds)
@@ -45,12 +48,13 @@ void ASentinelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(!SentinelDirector)
+	if (!SentinelDirector)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Director not linked to SentinelCharacter"));
+		UE_LOG(LogTemp, Warning, TEXT("SentinelCharacter %s NOT ADDED to SentinelDirector"), *GetName());
 	}
 	else
 	{
+		// Add the sentinel to the director's list
 		Cast<ASentinelDirector>(SentinelDirector)->AddSentinel(this);
 	}
 }
@@ -60,14 +64,35 @@ UHealthComponent* ASentinelCharacter::GetHealthComponent() const
 	return HealthComponent;
 }
 
-int ASentinelCharacter::GetFaction() const
+int ASentinelCharacter::GetFactionIdx() const
 {
 	return FactionIdx;
 }
 
-int ASentinelCharacter::GetSquad() const
+int ASentinelCharacter::GetSquadIdx() const
 {
 	return SquadIdx;
+}
+
+bool ASentinelCharacter::IsAlly(int OtherFactionIdx) const
+{
+	return FactionIdx == OtherFactionIdx;
+}
+
+bool ASentinelCharacter::IsSquad(int OtherFactionIdx, int OtherSquadIdx) const
+{
+	return OtherFactionIdx == FactionIdx && OtherSquadIdx == SquadIdx;
+}
+
+bool ASentinelCharacter::IsOnLastStand() const
+{
+	return HealthComponent->IsOnLastStand();
+}
+
+void ASentinelCharacter::Attack(const ASentinelCharacter* Target, float Damage)
+{
+	UE_LOG(LogTemp, Log, TEXT("Attacking target, Attacker %s"), *GetName());
+	Target->GetHealthComponent()->TakeDamage(Damage, this);
 }
 
 void ASentinelCharacter::SetFaction(int NewFactionIdx)
@@ -82,10 +107,48 @@ void ASentinelCharacter::SetSquad(int NewSquadIdx)
 
 ASentinelController* ASentinelCharacter::GetSentinelController() const
 {
-	if(ASentinelController* SController = Cast<ASentinelController>(GetController()))
+	if(!IsValidLowLevel())
 	{
-		return SController;
+		return nullptr;
 	}
 	
+	AController* AIController = GetController();
+	if (AIController)
+	{
+		ASentinelController* SController = Cast<ASentinelController>(AIController);
+		if (SController)
+		{
+			return SController;
+		}
+	}
 	return nullptr;
+}
+
+ASentinelFaction* ASentinelCharacter::GetFaction() const
+{
+	return SentinelDirector->GetFaction(FactionIdx);
+}
+
+ASentinelSquad* ASentinelCharacter::GetSquad() const
+{
+	if(!IsValidLowLevel()) return nullptr;
+	
+	return SentinelDirector->GetSquad(FactionIdx, SquadIdx);
+}
+
+ASentinelDirector* ASentinelCharacter::GetDirector() const
+{
+	return SentinelDirector;
+}
+
+void ASentinelCharacter::OnDeath()
+{
+	GetSquad()->LeaveSquad(this);
+	GetSentinelController()->OnDeath();
+}
+
+void ASentinelCharacter::OnLastStand()
+{
+	PlayAnimMontage(LastStandMontage);
+	GetSentinelController()->OnLastStand();
 }

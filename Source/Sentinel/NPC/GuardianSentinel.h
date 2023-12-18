@@ -25,6 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnDeath() override;
+	virtual void OnLastStand() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "1. Settings",
 	meta = (AllowPrivateAccess = "true", ToolTip = "This collider stops any incoming enemy or projectile"))

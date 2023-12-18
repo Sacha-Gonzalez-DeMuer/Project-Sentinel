@@ -4,6 +4,7 @@
 #include "Sentinel/NPC/AI/GuardianController.h"
 
 #include "Sentinel/SentinelCharacter.h"
+#include "Sentinel/Components/HealthComponent.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "Sentinel/NPC/ZombSentinel.h"
 
@@ -29,10 +30,10 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 				SetTarget(Sentinel);
 			} else
 			{
-				int SSFactionIdx = Sentinel->GetFaction();
+				int SSFactionIdx = Sentinel->GetFactionIdx();
 				// int SSSquadIdx = Sentinel->GetSquad();
 
-				if (SSFactionIdx != NPCBase->GetFaction())
+				if (SSFactionIdx != NPCBase->GetFactionIdx())
 				{
 					AddThreat(Sentinel);
 				}
@@ -49,5 +50,8 @@ void AGuardianController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if(NPCBase->GetHealthComponent()->GetHealth() <= 0) return;
+
+	
 	UpdateRetargetingTimer(DeltaSeconds);
 }

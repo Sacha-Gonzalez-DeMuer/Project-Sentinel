@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathDelegate);
+class ASentinelCharacter;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthEventDelegate);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -18,10 +19,19 @@ public:
 	UHealthComponent();
 
 	UPROPERTY(BlueprintCallable, Category = "1. Events")
-	FOnDeathDelegate OnDeath;
+	FHealthEventDelegate OnDeath;
+	
+	UPROPERTY(BlueprintCallable, Category = "1. Events")
+	FHealthEventDelegate OnLastStand;
+
+	UPROPERTY(BlueprintCallable, Category = "1. Events")
+	FHealthEventDelegate OnRevive;
+
+	UPROPERTY(BlueprintCallable, Category= "1. Events")
+	FHealthEventDelegate OnTakeDamage;
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void TakeDamage(const int Amount);
+	virtual void TakeDamage(const int Amount, ASentinelCharacter* Instigator);
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void Heal(int Amount);
@@ -40,14 +50,30 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHealthInPercent() const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetLastStandTimerPercent() const;
+	
+	void SetParentCharacter(ASentinelCharacter* Parent);
+	bool IsOnLastStand() const;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
 	virtual void Die();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "1. Health", meta = (AllowPrivateAccess = "true"))
 	int MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="1. Health", meta = (AllowPrivateAccess = "true"))
+	float LastStandTime;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="1. Health", meta = (AllowPrivateAccess = "true"))
+	float ReviveRechargeTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="1. Health", meta = (AllowPrivateAccess = "true"))
+	float ReviveCooldownTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="1. Health", meta = (AllowPrivateAccess = "true"))
+	bool CanBeRevived = true;
 	
 	int CurrentHealth;
 	bool CanTakeDamage = true;
@@ -56,4 +82,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	float ReviveCooldownTimer;
+	float LastStandTimer;
+
+	UPROPERTY()
+	ASentinelCharacter* Character;
+
+	bool _IsOnLastStand;
 };

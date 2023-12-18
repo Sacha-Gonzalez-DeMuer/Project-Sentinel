@@ -14,6 +14,10 @@
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/SentinelPlayerCharacter.h"
 #include "Sentinel/Components/HealthComponent.h"
+#include "Sentinel/Actors/SentinelSquad.h"
+#include "Sentinel/Actors/SentinelFaction.h"
+#include "Sentinel/NPC/SentinelDirector.h"
+
 
 ASentinelController::ASentinelController(FObjectInitializer const& objectInit)
 	: RetargetingInterval(1.0f)
@@ -46,7 +50,6 @@ void ASentinelController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-
 }
 
 void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
@@ -57,21 +60,19 @@ void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
 void ASentinelController::SetTarget(ASentinelCharacter* NewTarget) const
 {
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), NewTarget);
-
-	// Print the name of the target
-	FString TargetName = NewTarget ? NewTarget->GetName() : TEXT("None");
-	UE_LOG(LogTemp, Warning, TEXT("Target set to: %s"), *TargetName);
-
-	// Check if the object is set
-	if (BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)) == NewTarget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Target successfully set"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to set the target"));
-	}
 }
+
+void ASentinelController::SetDefaultTarget()
+{
+	if (NPCBase->IsPlayerTarget())
+		if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+		{
+			BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), PlayerPawn);
+		}
+	else BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), nullptr);
+
+}
+
 
 void ASentinelController::OnSeePawn(APawn* SeenPawn)
 {
@@ -84,10 +85,10 @@ void ASentinelController::OnSeePawn(APawn* SeenPawn)
 		}
 		else if (Cast<ANPCBase>(Sentinel))
 		{
-			int SSFactionIdx = Sentinel->GetFaction();
+			int SSFactionIdx = Sentinel->GetFactionIdx();
 			// int SSSquadIdx = Sentinel->GetSquad();
 
-			if (SSFactionIdx != NPCBase->GetFaction())
+			if (SSFactionIdx != NPCBase->GetFactionIdx())
 			{
 				AddThreat(Sentinel);
 			}
@@ -100,8 +101,9 @@ void ASentinelController::OnSeePawn(APawn* SeenPawn)
 }
 
 
-float ASentinelController::GetThreatToTarget() const
+float ASentinelController::GetThreatToTarget() 
 {
+	RecalculateThreatToTarget();
 	return ThreatToTarget;
 }
 
@@ -117,6 +119,11 @@ FVector ASentinelController::GetThreatLocation() const
 
 	// no threat found
 	return NPCBase->GetActorLocation();
+}
+
+void ASentinelController::AddSeenThreat(ASentinelCharacter* NewThreat)
+{
+	SeenThreats.Add(NewThreat);
 }
 
 void ASentinelController::DisableBehaviorTree()
@@ -139,6 +146,11 @@ void ASentinelController::OnDeath()
 	DisableBehaviorTree();
 }
 
+void ASentinelController::OnLastStand()
+{
+	DisableBehaviorTree();
+}
+
 bool ASentinelController::HasTarget() const
 {
 	return BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)) != nullptr;
@@ -146,7 +158,10 @@ bool ASentinelController::HasTarget() const
 
 ASentinelCharacter* ASentinelController::GetCurrentThreat() const
 {
-	return Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)));
+	if(ASentinelCharacter* CurrentThreat = Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget))))
+		return CurrentThreat;
+
+	return nullptr;
 }
 
 void ASentinelController::AddThreat(ASentinelCharacter* NewThreat)
@@ -204,7 +219,6 @@ void ASentinelController::InitializeBlackboardKeys()
 
 		BlackboardComponent->SetValueAsBool(FName(BBKeys::IsAlive), true);
 		
-		
 		if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 		{
 			if (NPCBase->IsPlayerTarget())
@@ -222,6 +236,14 @@ void ASentinelController::InitializeBlackboardKeys()
 				Player = PlayerCharacter;
 				BlackboardComponent->SetValueAsObject(FName(BBKeys::Player), PlayerCharacter);
 			}
+
+			ASentinelSquad* Squad = NPCBase->GetSquad();
+			BlackboardComponent->SetValueAsObject(FName(BBKeys::Squad), Squad);
+
+			ASentinelFaction* Faction = NPCBase->GetFaction();
+			BlackboardComponent->SetValueAsObject(FName(BBKeys::Faction), Faction);
+
+			SetRole(ERoles::Escort);
 		}
 	}
 }
@@ -241,7 +263,8 @@ void ASentinelController::SetDefaultTarget() const
 	}
 }
 
-float ASentinelController::EvaluateThreatToPrincipal(const ASentinelCharacter* Threat) const
+
+float ASentinelController::EvaluateThreatToPrincipal(ASentinelCharacter* Threat)
 {
 	if (const ASentinelCharacter* Principal = GetPrincipal())
 	{
@@ -267,7 +290,7 @@ float ASentinelController::EvaluateThreatToPrincipal(const ASentinelCharacter* T
 	return 0;
 }
 
-float ASentinelController::EvaluateThreatToTarget() const
+float ASentinelController::EvaluateThreatToTarget()
 {
 	if (const ASentinelCharacter* Principal = GetPrincipal())
 	{
@@ -311,7 +334,6 @@ void ASentinelController::RecalculateTargetPriority()
 		ASentinelCharacter* HighestPriorityThreat = nullptr;
 
 		TArray<ASentinelCharacter*> ThreatsToRemove;
-		
 		for (ASentinelCharacter* Threat : SeenThreats)
 		{
 			if(!IsValid(Threat))
@@ -321,7 +343,7 @@ void ASentinelController::RecalculateTargetPriority()
 			}
 			
 			// Evaluate threat priority using the provided function
-			const float ThreatPriority = Threat->GetSentinelController()->GetThreatToTarget();
+			const float ThreatPriority = EvaluateThreatPriority(Threat);
 
 			// Update the highest priority threat
 			if (ThreatPriority > HighestPriority)
@@ -358,6 +380,83 @@ void ASentinelController::RecalculateThreatToPrincipal()
 	ThreatToPrincipal = 0;
 }
 
+float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelCharacter)
+{
+/*
+	*For now they calculate priority by taking the highest threat.
+	Influence it with squad threat level?
+	Influence it with how many squadmates are targeting the same threat / squad
+	Should priority calculation be the directors job?
+	No, Sentinels ultimately make the decisions based on their state. Director will change their state depending on current game state.
+*/
+	if(_SentinelCharacter->GetHealthComponent()->IsOnLastStand()) return TNumericLimits<float>::Min();
+	
+	float PriorityEvaluation = 0;
+	
+	const ASentinelSquad* ThreatSquad = _SentinelCharacter->GetSquad();
+	const ASentinelSquad* MySquad = NPCBase->GetSquad();
+	//const int NrSentinelsAttackingSquad = MySquad->GetNrAttackingSentinels(ThreatSquad); // how many squad members attacking targets squad? // ******** CRASHES IDK Y
+	const int NrSentinelsAttackingTarget = MySquad->GetNrAttackingSentinels(_SentinelCharacter); // how many squad members attacking target sentinel
+	const int SentinelThreatToPrincipal = EvaluateThreatToPrincipal(_SentinelCharacter);
+	//const int ThreatSquadSize = ThreatSquad->GetNrSentinels();
+
+
+	/*
+	const float DistanceToTarget = FVector::Dist(_SentinelCharacter->GetActorLocation(), _SentinelCharacter->GetActorLocation());
+	const float MaxDistance = 1000.0f; 
+	const float DistanceWeight = FMath::Lerp(0.0f, 1.0f, FMath::Clamp(DistanceToTarget / MaxDistance, 0.0f, 10000.0f));
+	PriorityEvaluation += DistanceWeight;
+	*/
+	
+	// Adjust PriorityEvaluation based on squared distance
+	PriorityEvaluation += _SentinelCharacter->GetSentinelController()->GetThreatToTarget();
+	PriorityEvaluation += ThreatSquad->GetAverageThreat();
+	PriorityEvaluation += SentinelThreatToPrincipal;
+	
+	PriorityEvaluation -= MySquad->GetAverageThreat() * (NrSentinelsAttackingTarget / MySquad->GetNrSentinels());
+	
+	return PriorityEvaluation;
+}
+
+
+FVector ASentinelController::CalculateProtectivePos(const ASentinelCharacter* Protectee,
+	const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee)
+{
+	// Calculate vectors from attacker and protectee
+	FVector ProtecteeLocation = Protectee->GetActorLocation();
+	FVector AttackerLocation = Attacker->GetActorLocation();
+
+	// Calculate the vector from protectee to attacker
+	FVector ProtecteeToAttacker = (AttackerLocation - ProtecteeLocation).GetSafeNormal();
+
+	// Calculate the protective position in between the attacker and protectee
+	FVector ProtectivePos = ProtecteeLocation + ProtecteeToAttacker * DistanceInFrontOfProtectee;
+
+	return ProtectivePos;
+}
+
+FVector ASentinelController::CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid)
+{
+	FVector Avoidance = FVector::Zero();
+	for(ASentinelCharacter* SentinelToAvoid : SquadToAvoid->GetSentinels())
+	{
+		Avoidance += CalculateCharacterAvoidance(SentinelToAvoid);
+	}
+
+	return Avoidance;
+}
+
+FVector ASentinelController::CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid)
+{
+	// Implement logic to calculate a steering force to avoid a specific character
+	FVector AvoidanceForce = FVector::ZeroVector;
+
+	// Example: Calculate a force based on the position of the character to avoid
+	AvoidanceForce = NPCBase->GetActorLocation() - ToAvoid->GetActorLocation();
+
+	return AvoidanceForce.GetSafeNormal();
+}
+
 ASentinelCharacter* ASentinelController::GetPrincipal() const
 {
 	return Cast<ASentinelCharacter>(
@@ -368,4 +467,9 @@ ASentinelCharacter* ASentinelController::GetTarget() const
 {
 	return Cast<ASentinelCharacter>(
 		BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)));
+}
+
+void ASentinelController::SetRole(ERoles toRole)
+{
+	BlackboardComponent->SetValueAsEnum(FName(BBKeys::Role), static_cast<uint8>(toRole));
 }

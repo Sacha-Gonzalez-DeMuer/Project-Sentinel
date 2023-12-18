@@ -41,11 +41,10 @@ int ASentinelFaction::GetFactionIdx() const
 
 ASentinelSquad* ASentinelFaction::GetSquad(int SquadIdx)
 {
-	if(SquadIdx < Squads.Num() && Squads[SquadIdx] != nullptr) return Squads[SquadIdx];
+	if(SquadIdx < Squads.Num() && IsValid(Squads[SquadIdx]) && Squads[SquadIdx] != nullptr) return Squads[SquadIdx];
 
 	// Create a new Squad
-	ASentinelSquad* NewSquad = GetWorld()->SpawnActor<ASentinelSquad>(SquadType);
-	if (NewSquad)
+	if (ASentinelSquad* NewSquad = GetWorld()->SpawnActor<ASentinelSquad>(SquadType))
 	{
 		// Initialize the Squad
 		NewSquad->SetIdx(FactionIdx, SquadIdx);
@@ -59,9 +58,14 @@ ASentinelSquad* ASentinelFaction::GetSquad(int SquadIdx)
 		UE_LOG(LogTemp, Log, TEXT("Squad Created"));
 		return NewSquad;
 	}
-
-	return nullptr;
 	
+	UE_LOG(LogTemp, Error, TEXT("Failed to Create new Squad"));
+	return nullptr;
+}
+
+TArray<ASentinelSquad*> ASentinelFaction::GetSquads() const
+{
+	return Squads;
 }
 
 

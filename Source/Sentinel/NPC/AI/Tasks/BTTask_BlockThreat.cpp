@@ -51,26 +51,44 @@ EBTNodeResult::Type UBTTask_BlockThreat::ExecuteTask(UBehaviorTreeComponent& Own
 		UE_LOG(LogTemp, Warning, TEXT("BlockThreat task failed"));
 		return EBTNodeResult::Failed;
 	}
-	
+
 	return EBTNodeResult::InProgress;
 }
 
 void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+	
+	// Get the owning actor
+	AActor* OwnerActor = OwnerComp.GetOwner();
 
+	// Check if the owner actor is valid
+	if (OwnerActor)
+	{
+		// Print the name of the owner actor
+		UE_LOG(LogTemp, Warning, TEXT("Owner Actor Name: %s"), *OwnerActor->GetName());
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
+	else
+	{
+		// Print a warning if the owner actor is not valid
+		UE_LOG(LogTemp, Warning, TEXT("Owner Actor is invalid"));
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
+	const FVector ThreatLocation = NPC->GetSentinelController()->GetThreatLocation();
 	
 	// Calculate the desired position between the principal and the threat
 	const FVector PrincipalLocation = Principal->GetActorLocation();
-	const FVector ThreatLocation = NPC->GetSentinelController()->GetThreatLocation();
-	const FVector DesiredDirection = (ThreatLocation - PrincipalLocation).GetSafeNormal() * DistanceInFrontOfPrincipal;
-
-	// Calculate the distance between the threat and the principal
-	const float DistanceToThreat = FVector::Dist(PrincipalLocation, ThreatLocation);
+	const FVector PrincipalToThreat = ThreatLocation - PrincipalLocation;
+	const FVector DesiredDirection = PrincipalToThreat.GetSafeNormal() * DistanceInFrontOfPrincipal;
+	const FVector ProtectivePosition = PrincipalLocation + DesiredDirection;
+	const FVector ProtectiveToThreat = ThreatLocation - ProtectivePosition;
+	const float ProtectivePositionDistanceToThreat = PrincipalToThreat.Length() - DistanceInFrontOfPrincipal;
+	const float DistanceToThreat = PrincipalToThreat.Length();
 
 	// Additional influence factor based on the threat's proximity
-	const float ThreatInfluenceFactor = FMath::Clamp(1.0f - DistanceToThreat / MaxAvoidanceDistance, 0.0f, 1.0f);
-	const FVector AvoidanceDirection = (ThreatLocation - PrincipalLocation).GetSafeNormal() * ThreatInfluenceFactor;
+	const float ThreatInfluenceFactor = FMath::Clamp(1.0f - ProtectivePositionDistanceToThreat / MaxAvoidanceDistance, 0.0f, 1.0f);
+	const FVector AvoidanceDirection = -ProtectiveToThreat.GetSafeNormal() * ThreatInfluenceFactor;
 
 	// Combine the desired direction and avoidance direction with weights
 	const FVector CombinedDirection = DesiredDirection * (1.0f - AvoidanceWeight) - AvoidanceDirection * AvoidanceWeight;
@@ -78,20 +96,17 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	//PrincipalLocation + (PrincipalLocation - ThreatLocation).GetSafeNormal() * DistanceInFrontOfPrincipal;
 
 	// Draw a debug sphere at the desired position
-	DrawDebugSphere(GetWorld(), DesiredPosition, 50.0f, 8, FColor::Green, false, -1, 0, 1);
-
-	// Print debug information
-	//UE_LOG(LogTemp, Warning, TEXT("Principal Location: %s"), *PrincipalLocation.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("Threat Location: %s"), *ThreatLocation.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("Desired Position: %s"), *DesiredPosition.ToString());
+	//DrawDebugSphere(GetWorld(), DesiredPosition, 50.0f, 8, FColor::Green, false, -1, 0, 1);
 
 	// Move the NPC towards the desired position
 	if (NPCController)
 	{
 		NPCController->MoveTo(DesiredPosition);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NPCController is nullptr!"));
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 }

@@ -37,10 +37,26 @@ void AGuardianSentinel::BeginPlay()
 		HealthComponent = GetComponentByClass<UHealthComponent>();
 	
 	//GuardianController = Cast<AGuardianController>(GetController());
+
+
+	if(HealthComponent)
+	{
+		//HealthComponent->OnDeath.AddDynamic(this, &AGuardianSentinel::OnDeath);
+		HealthComponent->OnLastStand.AddDynamic(this, &AGuardianSentinel::OnLastStand);
+		HealthComponent->SetParentCharacter(this);
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("ZombSentinel.cpp: NPCBase failed to setup healthcomponent"))
+
 }
 
 void AGuardianSentinel::OnDeath()
 {
 	GuardianController->DisableBehaviorTree();
 	Destroy();
+}
+
+void AGuardianSentinel::OnLastStand()
+{
+	GetSquad()->RequestMedic(this);
+	GuardianController->DisableBehaviorTree();
 }

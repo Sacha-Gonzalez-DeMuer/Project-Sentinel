@@ -39,7 +39,9 @@ bool ANPCBase::IsPlayerPrincipal() const
 void ANPCBase::Attack(const ASentinelCharacter* Target, float Damage)
 {
 	UE_LOG(LogTemp, Log, TEXT("Attacking target, Attacker %s"), *GetName());
-	Target->GetHealthComponent()->TakeDamage(Damage);
+	Target->GetHealthComponent()->TakeDamage(Damage, this);
+
+	if(Target->IsOnLastStand()) GetSentinelController()->SetDefaultTarget();
 }
 
 // Called when the game starts or when spawned
@@ -66,10 +68,5 @@ void ANPCBase::OnAttackColliderEnter(AActor* OtherActor)
 	if(!SentinelController->IsAttacking()) return;
 	
 	if(const ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(OtherActor))
-		Sentinel->GetHealthComponent()->TakeDamage(10);
-}
-
-void ANPCBase::OnDeath()
-{
-	SentinelController->OnDeath();
+		Sentinel->GetHealthComponent()->TakeDamage(10, this);
 }

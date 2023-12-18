@@ -32,7 +32,7 @@ public:
 	int GetFactionIdx() const;
 
 	ASentinelSquad* GetSquad(int SquadIdx);
-	
+	TArray<ASentinelSquad*> GetSquads() const;
 private:
 	int FactionIdx;
 

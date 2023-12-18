@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SentinelCharacter.generated.h"
 
+class ASentinelFaction;
+class ASentinelSquad;
 class ASentinelDirector;
 class ASentinelController;
 class UHealthComponent;
@@ -24,15 +26,31 @@ public:
 	virtual void BeginPlay() override;
 	
 	UHealthComponent* GetHealthComponent() const;
-	int GetFaction() const;
-	int GetSquad() const;
+	int GetFactionIdx() const;
+	int GetSquadIdx() const;
+	
+	bool IsAlly(int OtherFactionIdx) const;
+	bool IsSquad(int OtherFactionIdx, int OtherSquadIdx) const;
 
 	void SetFaction(int NewFactionIdx);
 	void SetSquad(int NewSquadIdx);
-
+	
 	ASentinelController* GetSentinelController() const;
+	ASentinelFaction* GetFaction() const;
+	ASentinelSquad* GetSquad() const;
+	ASentinelDirector* GetDirector() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsOnLastStand() const;
+
+	virtual void Attack(const ASentinelCharacter* Target, float Damage);
 
 	
+	UFUNCTION()
+	virtual void OnDeath();
+
+	UFUNCTION()
+	virtual void OnLastStand();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI",  meta = (AllowPrivateAccess = "true"),
 	meta = (ToolTip = "The team this agent will be part of. A faction consists of one or multiple allied squads."))
@@ -45,9 +63,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
 
+	// ANIMATIONS
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage *LastStandMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage *RevivingMontage;
+	
 private:
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ASentinelDirector* SentinelDirector;
 };

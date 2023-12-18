@@ -7,23 +7,58 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4f4478c7-9adb-44e4-9f72-a76d61a452d8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="c753fb34-c95a-4885-951c-cbee544cb8b6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BB_Sentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BB_Sentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Sentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Sentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Zomb.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Zomb.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/BP_Bullet0.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_GuardianSentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_GuardianSentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Widgets/HealthBarWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Widgets/HealthBarWidget.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/ABP_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Mannequins/Animations/ABP_Manny.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/StarterContent/Blueprints/Blueprint_CeilingLight.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/StarterContent/Blueprints/Blueprint_CeilingLight.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/StarterContent/HDRI/HDRI_Epic_Courtyard_Daylight.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/StarterContent/HDRI/HDRI_Epic_Courtyard_Daylight.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/0/QQ/OQ3FOC09Z2IIY2NRSH61QR.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/0/QQ/OQ3FOC09Z2IIY2NRSH61QR.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/5P/LI2VG06S5FXGB2C300C92Y.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/5P/LI2VG06S5FXGB2C300C92Y.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/YE/1XVWY8L8ZNN0XTS28QUVBB.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/YE/1XVWY8L8ZNN0XTS28QUVBB.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/0/QQ/OQ3FOC09Z2IIY2NRSH61QR.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/0/QS/8AKCSH4RXXQHHQMCR8GO6C.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/0/QS/8AKCSH4RXXQHHQMCR8GO6C.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/5P/LI2VG06S5FXGB2C300C92Y.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/61/EPLZ5F5QZX4Z8EA67PW5Y0.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/LH/V6N3G2I7QT53NAD6H1AD04.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/LH/V6N3G2I7QT53NAD6H1AD04.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/5/YE/1XVWY8L8ZNN0XTS28QUVBB.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/7/PR/216RTTUDAV7AKCGY1UTLCS.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/7/PR/216RTTUDAV7AKCGY1UTLCS.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/7/WV/FF6LPDZ0FKKLS0GFFG7RY1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/7/WV/FF6LPDZ0FKKLS0GFFG7RY1.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/6E/E5IB9CK0S6X8YA29PY00SI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/6E/E5IB9CK0S6X8YA29PY00SI.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/KH/6E48O2IIDEE4GC8FXM751K.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/KH/6E48O2IIDEE4GC8FXM751K.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/KH/6E48O2IIDEE4GC8FXM751K.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/C/ET/IP5UOV1ZSFJQ811Q8DY0W1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/C/ET/IP5UOV1ZSFJQ811Q8DY0W1.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/E/QX/3XD7VOT2IY5LBBPGGBCHY5.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/E/QX/3XD7VOT2IY5LBBPGGBCHY5.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/E/QX/3XD7VOT2IY5LBBPGGBCHY5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/Bullet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/Bullet.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/Bullet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/Bullet.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelFaction.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelFaction.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelFaction.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelFaction.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/BlackboardKeys.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/BlackboardKeys.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_MeleeAttack.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_MeleeAttack.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_MeleeAttack.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_MeleeAttack.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_SimpleAttack.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_SimpleAttack.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/GuardianSentinel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/GuardianSentinel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/GuardianSentinel.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/GuardianSentinel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" afterDir="false" />
     </list>
@@ -39,7 +74,7 @@
   "customColor": "",
   "associatedIndex": 1
 }]]></component>
-  <component name="ProjectId" id="2ZdEcXZXSKps4vmAZjHjGqO9uWr" />
+  <component name="ProjectId" id="2Zj4cwXws3iL9qqw0po2F0g80zC" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -129,12 +164,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="4f4478c7-9adb-44e4-9f72-a76d61a452d8" name="Changes" comment="" />
-      <created>1702743638371</created>
+      <changelist id="c753fb34-c95a-4885-951c-cbee544cb8b6" name="Changes" comment="" />
+      <created>1702922241804</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1702743638371</updated>
-      <workItem from="1702743642170" duration="1012000" />
+      <updated>1702922241804</updated>
+      <workItem from="1702922244444" duration="8937000" />
     </task>
     <servers />
   </component>

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SentinelSquad.generated.h"
 
+class ASentinelFaction;
 class ASentinelCharacter;
 
 UCLASS()
@@ -32,8 +33,23 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void AddSentinel(ASentinelCharacter* Sentinel);
-	void SetIdx(int Faction, int Squad);
+	void SetIdx(int NewFactionIdx, int NewSquadIdx);
+	void SetFaction(ASentinelFaction* NewFaction);
+	float GetAverageThreat() const;
+
+	void LeaveSquad(ASentinelCharacter* SentinelToLeave);
+
+	// retrieves how many squad members are attacking given target
+	int GetNrAttackingSentinels(const ASentinelCharacter* Target) const;
+	int GetNrAttackingSentinels(const ASentinelSquad* Target) const;
+	int GetNrSentinels() const;
+	TArray<ASentinelCharacter*> GetSentinels() const;
+
+	void RequestMedic(ASentinelCharacter* Patient);
 	
 private:
 	TArray<ASentinelCharacter*> Sentinels;
+
+	UPROPERTY()
+	ASentinelFaction* Faction;
 };

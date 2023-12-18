@@ -4,6 +4,7 @@
 #include "AI/SentinelController.h"
 #include "AI/ZombController.h"
 #include "Components/SphereComponent.h"
+#include "Sentinel/Actors/SentinelSquad.h"
 #include "Sentinel/Components/HealthComponent.h"
 
 
@@ -29,8 +30,12 @@ void AZombSentinel::BeginPlay()
 	}
 
 	if(HealthComponent)
-		HealthComponent->OnDeath.AddDynamic(this, &AZombSentinel::OnDeath);
-	else UE_LOG(LogTemp, Warning, TEXT("NPCBase failed to setup healthcomponent delegate"))
+	{
+		//HealthComponent->OnDeath.AddDynamic(this, &AZombSentinel::OnDeath);
+		HealthComponent->OnLastStand.AddDynamic(this, &AZombSentinel::OnLastStand);
+		HealthComponent->SetParentCharacter(this);
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("ZombSentinel.cpp: NPCBase failed to setup healthcomponent"))
 
 	ZombController = Cast<AZombController>(GetController());
 	if(!ZombController) UE_LOG(LogTemp, Error, TEXT("Failed to cache ZombController in ZombSentinel.cpp"));
@@ -43,17 +48,20 @@ void AZombSentinel::OnRetargetEnter(AActor* OtherActor)
 
 	if (AGuardianSentinel* Guardian = Cast<AGuardianSentinel>(OtherActor))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Detected Guardian with name: %s"), *OtherActor->GetName());
 		ZombController->SetTarget(Guardian);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Detected something with name: %s"), *OtherActor->GetName());
 	}
 }
 
 void AZombSentinel::OnDeath()
 {
+	GetSquad()->LeaveSquad(this);
 	ZombController->OnDeath();
 	Destroy();
+}
+
+void AZombSentinel::OnLastStand()
+{
+	GetSquad()->RequestMedic(this);
+	
+	ZombController->OnLastStand();
 }

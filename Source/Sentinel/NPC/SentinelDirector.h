@@ -35,7 +35,10 @@ public:
 	
 	ASentinelFaction* CreateFaction(int FactionIdx);
 	ASentinelSquad* GetSquad(int FactionIdx, int SquadIdx);
+	ASentinelFaction* GetFaction(int FactionIdx);
 
+	// Call an agent to target threat
+	void RequestAssistance(ASentinelSquad* Threat);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int MaxFactions;
@@ -44,5 +47,4 @@ private:
 	int MaxSquads;
 	
 	TArray<ASentinelFaction*> Factions;
-
 };

@@ -40,8 +40,8 @@ void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
         return;
     }
 
-    int FactionIdx = Sentinel->GetFaction();
-    int SquadIdx = Sentinel->GetSquad();
+    int FactionIdx = Sentinel->GetFactionIdx();
+    int SquadIdx = Sentinel->GetSquadIdx();
 
     // 2. Ensure that FactionIdx is non-negative
     if (FactionIdx < 0)
@@ -135,11 +135,6 @@ ASentinelFaction* ASentinelDirector::CreateFaction(int FactionIdx)
 		// Ensure the array is large enough
 		// 3. Ensure Factions.Num() is non-negative before taking its maximum
 		int32 NewArraySize = FMath::Max(Factions.Num(), FactionIdx + 1);
-		if (NewArraySize < 0)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Invalid array size. Cannot proceed."));
-			return nullptr;
-		}
 		Factions.SetNum(NewArraySize);
 
 		// 4. Ensure FactionIdx is within the bounds of the Factions array after resizing
@@ -165,18 +160,76 @@ ASentinelFaction* ASentinelDirector::CreateFaction(int FactionIdx)
 	
 	return nullptr;
 }
-
 ASentinelSquad* ASentinelDirector::GetSquad(int FactionIdx, int SquadIdx)
 {
-	if (Factions.IsValidIndex(FactionIdx))
+	if(FactionIdx < Factions.Num())
 	{
-		return Factions[FactionIdx]->GetSquad(SquadIdx);
+		if(!IsValidLowLevel()) return nullptr;
+		if(!Factions[FactionIdx]->IsValidLowLevel()) return nullptr;
+		
+		if (IsValid(Factions[FactionIdx]))
+		{
+			// Return the squad based on the provided squad index
+			ASentinelSquad* Squad = Factions[FactionIdx]->GetSquad(SquadIdx);
+			
+			return Squad;
+		}
 	}
 	else
 	{
-		// create faction?
-		return nullptr;
+		// Log information for debugging
+		ASentinelFaction* NewFaction = CreateFaction(FactionIdx);
+		ASentinelSquad* NewSquad = NewFaction->GetSquad(SquadIdx);
+		
+		return NewSquad;
 	}
+
+	return nullptr;
+}
+
+ASentinelFaction* ASentinelDirector::GetFaction(int FactionIdx)
+{
+	if (FactionIdx >= 0 && FactionIdx < Factions.Num())
+	{
+		return Factions[FactionIdx];
+	}
+	return nullptr;
+}
+
+void ASentinelDirector::RequestAssistance(ASentinelSquad* Threat)
+{
+	// Check if the threat is valid
+	if (!Threat)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid threat provided for assistance request."));
+		return;
+	}
+
+	// Assess the threat level (you can implement your own logic for this)
+	float ThreatLevel = Threat->GetAverageThreat();
+	//
+	// // Find a suitable squad to assist based on threat level
+	// ASentinelSquad* AvailableSquad = nullptr;
+	//
+	// for (ASentinelFaction* Faction : Factions)
+	// {
+	// 	for (ASentinelSquad* Squad : Faction->GetSquads())
+	// 	{
+	// 		// You can customize this condition based on your game's logic
+	// 		//if (Squad->IsAvailableForAssistance() && Squad->EvaluateThreatLevel() < ThreatLevel)
+	// 		//{
+	// 		//	AvailableSquad = Squad;
+	// 		//	break;
+	// 		//}
+	// 	}
+	//
+	// 	if (AvailableSquad)
+	// 	{
+	// 		//// Assign the squad to assist the threat
+	// 		//AvailableSquad->AssistThreat(Threat);
+	// 		break;
+	// 	}
+	// }
 }
 
 

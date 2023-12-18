@@ -31,6 +31,8 @@ protected:
 
 
 	virtual void OnDeath() override;
+	virtual void OnLastStand() override;
+	
 private:
 
 	UPROPERTY()

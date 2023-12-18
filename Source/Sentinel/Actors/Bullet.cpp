@@ -49,7 +49,7 @@ void ABullet::Initialize(ASentinelCharacter* ShootingSentinel)
 	Shooter = ShootingSentinel;
 }
 
-void ABullet::OnOverlapBegin(AActor* OtherActor)
+void ABullet::DealDamage(AActor* OtherActor)
 {
 	if(!Shooter) return;
 	
@@ -57,10 +57,21 @@ void ABullet::OnOverlapBegin(AActor* OtherActor)
 	{
 		if(HitCharacter == Shooter) return;
 		
-		HitCharacter->GetHealthComponent()->TakeDamage(DamageToDeal);
+		HitCharacter->GetHealthComponent()->TakeDamage(DamageToDeal, Shooter);
 		Destroy();
 	}
 
+}
+
+void ABullet::Heal(AActor* OtherActor)
+{
+	if(const ASentinelCharacter* HitCharacter = Cast<ASentinelCharacter>(OtherActor))
+	{
+		if(HitCharacter == Shooter) return;
+		
+		HitCharacter->GetHealthComponent()->Heal(DamageToDeal);
+		Destroy();
+	}
 }
 
 // Called when the game starts or when spawned

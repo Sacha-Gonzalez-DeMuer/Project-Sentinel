@@ -23,7 +23,7 @@ public:
 	bool IsPlayerTarget() const;
 	bool IsPlayerPrincipal() const;
 
-	void Attack(const ASentinelCharacter* Target, float Damage);
+	virtual void Attack(const ASentinelCharacter* Target, float Damage) override;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -61,6 +61,5 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void OnAttackColliderEnter(AActor* OtherActor);
 
-	UFUNCTION()
-	virtual void OnDeath();
+
 };

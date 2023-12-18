@@ -3,10 +3,14 @@
 
 #include "Sentinel/NPC/AI/ZombController.h"
 
+#include "Sentinel/Components/HealthComponent.h"
+#include "Sentinel/NPC/NPCBase.h"
+
 void AZombController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdateThreatToTargetTimer(DeltaSeconds);
+	if(NPCBase->GetHealthComponent()->GetHealth() <= 0) return;
+
 	UpdateRetargetingTimer(DeltaSeconds * .5f);
 }
