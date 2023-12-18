@@ -28,49 +28,29 @@ void ASentinelDirector::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
+}void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
 {
-    UE_LOG(LogTemp, Log, TEXT(" SQUAD"))
-    
+    UE_LOG(LogTemp, Log, TEXT("[ASentinelDirector::AddSentinel] SQUAD"));
+
     // 1. Ensure that Sentinel is not nullptr
     if (!Sentinel)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Sentinel is nullptr. Cannot proceed."));
+        UE_LOG(LogTemp, Warning, TEXT("[ASentinelDirector::AddSentinel] Sentinel is nullptr. Cannot proceed."));
         return;
     }
 
     int FactionIdx = Sentinel->GetFactionIdx();
     int SquadIdx = Sentinel->GetSquadIdx();
 
-    // 2. Ensure that FactionIdx is non-negative
-    if (FactionIdx < 0)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid FactionIdx (%d). Cannot proceed."), FactionIdx);
-        return;
-    }
-
-    // 3. Ensure that SquadIdx is non-negative
-    if (SquadIdx < 0)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid SquadIdx (%d). Cannot proceed."), SquadIdx);
-        return;
-    }
-
     // Ensure the array is large enough
     // 4. Ensure Factions.Num() is non-negative before taking its maximum
     int32 NewArraySize = FMath::Max(Factions.Num(), FactionIdx + 1);
-    if (NewArraySize < 0)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Invalid array size. Cannot proceed."));
-        return;
-    }
     Factions.SetNum(NewArraySize, false);
 
     // 5. Ensure FactionIdx is within the bounds of the Factions array
     if (FactionIdx >= Factions.Num())
     {
-        UE_LOG(LogTemp, Warning, TEXT("FactionIdx (%d) out of bounds. Cannot proceed."), FactionIdx);
+        UE_LOG(LogTemp, Warning, TEXT("[ASentinelDirector::AddSentinel] FactionIdx (%d) out of bounds. Cannot proceed."), FactionIdx);
         return;
     }
 
@@ -81,32 +61,24 @@ void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
         Faction = CreateFaction(FactionIdx);
         if (!Faction)
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to create Faction. Cannot proceed."));
+            UE_LOG(LogTemp, Error, TEXT("[ASentinelDirector::AddSentinel] Failed to create Faction. Cannot proceed."));
             return;
         }
     }
 
-    auto Squad = Faction->GetSquad(SquadIdx);
-
-    if (Squad)
-    {
-        UE_LOG(LogTemp, Log, TEXT("GOT SQUAD"))
-    }
-    else
-    {
-        UE_LOG(LogTemp, Log, TEXT("WHERE D SQUAD"));
-    }
-
+	
     // 7. Ensure Squad is not nullptr before calling AddSentinel
+    auto Squad = Faction->GetSquad(SquadIdx);
     if (Squad)
     {
         Squad->AddSentinel(Sentinel);
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Squad is nullptr. Cannot add Sentinel."));
+        UE_LOG(LogTemp, Warning, TEXT("[ASentinelDirector::AddSentinel] Squad is nullptr. Cannot add Sentinel."));
     }
 }
+
 ASentinelFaction* ASentinelDirector::CreateFaction(int FactionIdx)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Creating Faction %d"), FactionIdx);

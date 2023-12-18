@@ -50,6 +50,9 @@ public:
 	virtual void OnDeath();
 
 	UFUNCTION()
+	virtual void OnRevive();
+
+	UFUNCTION()
 	virtual void OnLastStand();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI",  meta = (AllowPrivateAccess = "true"),

@@ -5,10 +5,12 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Sentinel/SentinelCharacter.h"
+#include "Sentinel/Components/HealthComponent.h"
 #include "Sentinel/NPC/AI/BlackboardKeys.h"
 
 UBTTask_ReviveSentinel::UBTTask_ReviveSentinel()
 {
+	NodeName = "Revive Sentinel";
 }
 
 EBTNodeResult::Type UBTTask_ReviveSentinel::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -16,23 +18,13 @@ EBTNodeResult::Type UBTTask_ReviveSentinel::ExecuteTask(UBehaviorTreeComponent& 
 	if(ASentinelCharacter* Patient = Cast<ASentinelCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(SentinelToRevive.SelectedKeyName)))
 	{
 		ToRevive = Patient;
-		return EBTNodeResult::InProgress;
+		if(ToRevive->IsOnLastStand())
+		{
+			ToRevive->GetHealthComponent()->Revive();
+		}
+	
+		return EBTNodeResult::Succeeded;
 	}
 	
 	return EBTNodeResult::Failed;;
-}
-
-void UBTTask_ReviveSentinel::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-	if(ToRevive->IsOnLastStand())
-	{
-		
-	}
-	else
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-
-	
 }

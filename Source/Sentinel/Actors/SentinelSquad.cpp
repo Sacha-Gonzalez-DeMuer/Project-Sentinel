@@ -160,6 +160,8 @@ void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 {
 	for (ASentinelCharacter* Sentinel : Sentinels)
 	{
+		if(Sentinel == Patient) continue;
+		
 		if (ASentinelController* SentinelController = Sentinel->GetSentinelController())
 		{
 			// Set the role and principal for the medic
@@ -168,7 +170,6 @@ void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 
 			// Print that a medic was found and its name
 			UE_LOG(LogTemp, Warning, TEXT("Medic Found: %s"), *Sentinel->GetName());
-
 			return;
 		}
 	}

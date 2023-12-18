@@ -11,14 +11,21 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Zomb.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Zomb.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/1/4D/AOI7MHGSL9SNBMCRDXPXYJ.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/1/4D/AOI7MHGSL9SNBMCRDXPXYJ.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/3/U8/YM3MW7H46Q9WJUDSB4LXMX.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/3/U8/YM3MW7H46Q9WJUDSB4LXMX.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/8/6H/NJCTJ65MFXT1P09UT2Z7QR.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/8/6H/NJCTJ65MFXT1P09UT2Z7QR.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/6E/E5IB9CK0S6X8YA29PY00SI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/TopDown/Maps/TopDownMap/9/6E/E5IB9CK0S6X8YA29PY00SI.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/SentinelSquad.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/GuardianController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/NPCBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Components/HealthComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_ReviveSentinel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_ReviveSentinel.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_ReviveSentinel.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_ReviveSentinel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/SentinelDirector.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +135,7 @@
       <option name="presentableId" value="Default" />
       <updated>1702922241804</updated>
       <workItem from="1702922244444" duration="8937000" />
-      <workItem from="1702933169539" duration="2174000" />
+      <workItem from="1702933169539" duration="5931000" />
     </task>
     <servers />
   </component>

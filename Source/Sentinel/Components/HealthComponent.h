@@ -55,6 +55,7 @@ public:
 	
 	void SetParentCharacter(ASentinelCharacter* Parent);
 	bool IsOnLastStand() const;
+	virtual void Revive();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

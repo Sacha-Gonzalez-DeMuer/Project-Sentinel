@@ -16,4 +16,6 @@ class SENTINEL_API AZombController : public ASentinelController
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnSeePawn(APawn* SeenPawn) override;
+
 };

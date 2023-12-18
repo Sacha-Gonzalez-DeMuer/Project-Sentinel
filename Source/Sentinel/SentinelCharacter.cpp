@@ -147,6 +147,12 @@ void ASentinelCharacter::OnDeath()
 	GetSentinelController()->OnDeath();
 }
 
+void ASentinelCharacter::OnRevive()
+{
+	GetDirector()->AddSentinel(this);
+	GetSentinelController()->OnLastStand();
+}
+
 void ASentinelCharacter::OnLastStand()
 {
 	PlayAnimMontage(LastStandMontage);

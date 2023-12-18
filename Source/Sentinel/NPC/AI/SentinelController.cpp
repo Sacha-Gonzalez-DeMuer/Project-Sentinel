@@ -148,7 +148,8 @@ void ASentinelController::OnDeath()
 
 void ASentinelController::OnLastStand()
 {
-	DisableBehaviorTree();
+	BlackboardComponent->SetValueAsBool(FName(BBKeys::IsAlive), true);
+	EnableBehaviorTree();
 }
 
 bool ASentinelController::HasTarget() const

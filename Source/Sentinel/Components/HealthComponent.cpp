@@ -41,10 +41,7 @@ void UHealthComponent::Heal(int Amount)
 	
 	if(CurrentHealth > MaxHealth)
 	{
-		_IsOnLastStand = false;
-		OnRevive.Broadcast();
-		
-		CurrentHealth = MaxHealth;
+		Revive();
 	}
 }
 
@@ -102,7 +99,7 @@ void UHealthComponent::BeginPlay()
 
 void UHealthComponent::Die()
 {
-	if(CanBeRevived && ReviveCooldownTimer <= 0)
+	if(CanBeRevived && ReviveCooldownTimer <= 0 && !_IsOnLastStand)
 	{
 		UE_LOG(LogTemp, Log, TEXT("final stand"));
 		// downed state
@@ -112,7 +109,7 @@ void UHealthComponent::Die()
 		LastStandTimer = LastStandTime;
 		ReviveCooldownTimer = ReviveCooldownTime;
 	}
-	else if (ReviveCooldownTimer <= 0)
+	else if (ReviveCooldownTimer <= 0 && !_IsOnLastStand)
 	{
 		UE_LOG(LogTemp, Log, TEXT("deded x.x"));
 		_IsOnLastStand = false;
@@ -120,6 +117,17 @@ void UHealthComponent::Die()
 		
 		Character->OnDeath();
 	}
+}
+
+void UHealthComponent::Revive()
+{
+	UE_LOG(LogTemp, Log, TEXT("RESSURECTION"));
+
+	_IsOnLastStand = false;
+	ReviveCooldownTimer = ReviveCooldownTime;
+	Character->OnRevive();
+	CurrentHealth = MaxHealth;
+	OnRevive.Broadcast();
 }
 
 
