@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "Sentinel/NPC/AI/BlackboardKeys.h"
@@ -101,7 +102,9 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	// Move the NPC towards the desired position
 	if (NPCController)
 	{
-		NPCController->MoveTo(DesiredPosition);
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(NPCController, DesiredPosition);
+
+		//NPCController->MoveTo(DesiredPosition);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else

@@ -49,6 +49,7 @@ void AZombSentinel::OnRetargetEnter(AActor* OtherActor)
 	if (AGuardianSentinel* Guardian = Cast<AGuardianSentinel>(OtherActor))
 	{
 		ZombController->SetTarget(Guardian);
+		ZombController->AddSeenThreat(Guardian);
 	}
 }
 

@@ -76,7 +76,7 @@ public:
 	void OnDeath();
 
 	UFUNCTION()
-	void OnLastStand();
+	virtual void OnLastStand();
 	
 	ASentinelCharacter* GetPrincipal() const;
 	ASentinelCharacter* GetTarget() const;

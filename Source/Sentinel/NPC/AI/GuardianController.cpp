@@ -46,6 +46,12 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 	}
 }
 
+void AGuardianController::OnLastStand()
+{
+	DisableBehaviorTree();
+	NPCBase->GetSquad()->RequestMedic(NPCBase);
+}
+
 void AGuardianController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

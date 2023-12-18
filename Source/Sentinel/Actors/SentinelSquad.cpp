@@ -158,14 +158,21 @@ TArray<ASentinelCharacter*> ASentinelSquad::GetSentinels() const
 
 void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 {
-	for(ASentinelCharacter* Sentinel : Sentinels)
+	for (ASentinelCharacter* Sentinel : Sentinels)
 	{
-		if(ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		if (ASentinelController* SentinelController = Sentinel->GetSentinelController())
 		{
+			// Set the role and principal for the medic
 			SentinelController->SetRole(ERoles::Medic);
 			SentinelController->SetPrincipal(Patient);
+
+			// Print that a medic was found and its name
+			UE_LOG(LogTemp, Warning, TEXT("Medic Found: %s"), *Sentinel->GetName());
+
 			return;
 		}
 	}
-}
 
+	// If no medic was found, print a message
+	UE_LOG(LogTemp, Warning, TEXT("No Medic Found in the Squad"));
+}

@@ -18,6 +18,7 @@ public:
 	AGuardianController(FObjectInitializer const& objectInit = FObjectInitializer::Get());
 
 	virtual void OnSeePawn(APawn* SeenPawn) override;
+	virtual void OnLastStand() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 private:
