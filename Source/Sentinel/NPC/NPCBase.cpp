@@ -5,6 +5,8 @@
 
 #include "AI/SentinelController.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Sentinel/Components/HealthComponent.h"
 
@@ -48,7 +50,6 @@ void ANPCBase::Attack(const ASentinelCharacter* Target, float Damage)
 void ANPCBase::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called to bind functionality to input

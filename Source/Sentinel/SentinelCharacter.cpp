@@ -79,6 +79,11 @@ bool ASentinelCharacter::IsAlly(int OtherFactionIdx) const
 	return FactionIdx == OtherFactionIdx;
 }
 
+bool ASentinelCharacter::IsAlly(ASentinelCharacter* Sentinel) const
+{
+	return Sentinel->GetFactionIdx() == FactionIdx;
+}
+
 bool ASentinelCharacter::IsSquad(int OtherFactionIdx, int OtherSquadIdx) const
 {
 	return OtherFactionIdx == FactionIdx && OtherSquadIdx == SquadIdx;

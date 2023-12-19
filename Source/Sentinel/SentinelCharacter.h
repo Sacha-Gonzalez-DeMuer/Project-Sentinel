@@ -30,6 +30,7 @@ public:
 	int GetSquadIdx() const;
 	
 	bool IsAlly(int OtherFactionIdx) const;
+	bool IsAlly(ASentinelCharacter* Sentinel) const;
 	bool IsSquad(int OtherFactionIdx, int OtherSquadIdx) const;
 
 	void SetFaction(int NewFactionIdx);

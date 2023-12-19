@@ -13,5 +13,5 @@ public:
 	SteeringBase();
 	~SteeringBase();
 
-	virtual FVector CalculateSteering(float DeltaTime) = 0;
+	//virtual FVector CalculateSteering(float DeltaTime) = 0;
 };

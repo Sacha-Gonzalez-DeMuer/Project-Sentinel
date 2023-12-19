@@ -28,6 +28,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AvoidanceWeight;
 
+	UPROPERTY(EditAnywhere)
+	float AcceptanceRadius;
+
+	
 	// The maximum distance at which the NPC will consider the threat for avoidance.
 	UPROPERTY(EditAnywhere)
 	float MaxAvoidanceDistance;
@@ -35,6 +39,9 @@ public:
 	// Minimum distance to consider a threat for avoidance behavior
 	UPROPERTY(EditAnywhere)
 	float MinDistanceToThreat;
+	
+	UPROPERTY(EditAnywhere)
+	float MinDistanceToPrincipal;
 
 	
 private:
@@ -49,4 +56,10 @@ private:
 
 	UPROPERTY()
 	ASentinelCharacter* Principal;
+
+	UPROPERTY()
+	UPawnMovementComponent* NPCMovement;
+
+	UPROPERTY()
+	ASentinelSquad* Squad;
 };

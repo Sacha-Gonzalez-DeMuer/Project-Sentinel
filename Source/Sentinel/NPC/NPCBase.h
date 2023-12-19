@@ -24,6 +24,7 @@ public:
 	bool IsPlayerPrincipal() const;
 
 	virtual void Attack(const ASentinelCharacter* Target, float Damage) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

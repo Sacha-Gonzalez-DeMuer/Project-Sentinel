@@ -10,6 +10,7 @@
 #include "Sentinel/NPC/NPCBase.h"
 #include "BlackboardKeys.h"
 #include "NavigationSystem.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/SentinelPlayerCharacter.h"
@@ -19,11 +20,11 @@
 #include "Sentinel/NPC/SentinelDirector.h"
 
 
-ASentinelController::ASentinelController(FObjectInitializer const& objectInit)
-	: RetargetingInterval(1.0f)
-	  , ThreatUpdateInterval(.5f)
-	  , RetargetingIntervalTimer(0.1f)
-	  , ThreatUpdateTimer(0.1f)
+ASentinelController::ASentinelController(const FObjectInitializer& ObjectInitializer)
+	: RetargetingInterval(1.0f),
+	ThreatUpdateInterval(.5f),
+	RetargetingIntervalTimer(0.1f),
+	ThreatUpdateTimer(0.1f)
 {
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior Tree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
@@ -359,12 +360,13 @@ void ASentinelController::RecalculateTargetPriority()
 			SeenThreats.Remove(ToRemove);
 		}
 		// Set the highest priority threat as the target
-		SetTarget(HighestPriorityThreat);
+		if(HighestPriorityThreat != nullptr)
+		{
+			SetTarget(HighestPriorityThreat);
+			return;
+		}
 	}
-	else // No threats are seen
-	{
-		SetDefaultTarget();
-	}
+	SetDefaultTarget();
 }
 
 void ASentinelController::RecalculateThreatToTarget()

@@ -22,7 +22,15 @@ public:
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	UPROPERTY()
+	float DamageToNearbyEnemySentinels;
+
+	UPROPERTY()
+	float DamageRadius;
+	
 private:
 	UPROPERTY()
 	ASentinelCharacter* ToRevive;
+
+	void KillNearbySentinels(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
 };

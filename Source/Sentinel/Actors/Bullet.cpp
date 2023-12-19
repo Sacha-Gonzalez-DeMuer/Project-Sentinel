@@ -60,7 +60,6 @@ void ABullet::DealDamage(AActor* OtherActor)
 		HitCharacter->GetHealthComponent()->TakeDamage(DamageToDeal, Shooter);
 		Destroy();
 	}
-
 }
 
 void ABullet::Heal(AActor* OtherActor)

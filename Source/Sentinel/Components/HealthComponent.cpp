@@ -135,7 +135,6 @@ void UHealthComponent::Revive()
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	if(ReviveCooldownTimer > 0)
 		ReviveCooldownTimer -= DeltaTime;
 

@@ -23,7 +23,7 @@ void AZombController::OnSeePawn(APawn* SeenPawn)
 	{
 		if (APlayerController* PlayerController = Cast<APlayerController>(SeenPawn->GetController()))
 		{
-			
+			AddThreat(Sentinel);
 		}
 		else if (Cast<ANPCBase>(Sentinel))
 		{

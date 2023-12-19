@@ -35,7 +35,7 @@ class SENTINEL_API ASentinelController : public AAIController
 	GENERATED_BODY()
 	
 public:
-	ASentinelController(FObjectInitializer const& objectInit = FObjectInitializer::Get());
+	ASentinelController(FObjectInitializer const& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
