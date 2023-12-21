@@ -6,6 +6,7 @@
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BTTask_ReviveSentinel.generated.h"
 
+class ANPCBase;
 class ASentinelCharacter;
 /**
  * 
@@ -32,5 +33,5 @@ private:
 	UPROPERTY()
 	ASentinelCharacter* ToRevive;
 
-	void KillNearbySentinels(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+	void KillNearbySentinels(ANPCBase* OwnerNPCBase);
 };

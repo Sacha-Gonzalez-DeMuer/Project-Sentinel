@@ -77,8 +77,6 @@ int ASentinelSquad::GetNrAttackingSentinels(const ASentinelCharacter* Target) co
 	// Check if the Target pointer is valid
 	if (Target)
 	{
-		//TArray<ASentinelCharacter*> ToRemove;
-		
 		for (ASentinelCharacter* SquadSentinel : Sentinels)
 		{
 			// Check if SquadSentinel pointer is valid
@@ -98,7 +96,6 @@ int ASentinelSquad::GetNrAttackingSentinels(const ASentinelCharacter* Target) co
 				{
 					// Log if the SentinelController is null
 					UE_LOG(LogTemp, Warning, TEXT("GetNrAttackingSentinels: SentinelController for SquadSentinel is null."));
-//					ToRemove.Add(SquadSentinel);
 				}
 			}
 			else
@@ -107,11 +104,6 @@ int ASentinelSquad::GetNrAttackingSentinels(const ASentinelCharacter* Target) co
 				UE_LOG(LogTemp, Warning, TEXT("GetNrAttackingSentinels: SquadSentinel in Sentinels array is null."));
 			}
 		}
-
-		//for(ASentinelCharacter* SentinelToRemove : ToRemove)
-		//{
-		//	Sentinels.Remove(SentinelToRemove);
-		//}
 	}
 	else
 	{

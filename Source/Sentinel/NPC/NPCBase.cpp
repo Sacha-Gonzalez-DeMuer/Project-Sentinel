@@ -42,7 +42,6 @@ void ANPCBase::Attack(const ASentinelCharacter* Target, float Damage)
 {
 	UE_LOG(LogTemp, Log, TEXT("Attacking target, Attacker %s"), *GetName());
 	Target->GetHealthComponent()->TakeDamage(Damage, this);
-
 	if(Target->IsOnLastStand()) GetSentinelController()->SetDefaultTarget();
 }
 
@@ -51,7 +50,7 @@ void ANPCBase::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
+                               
 // Called to bind functionality to input
 void ANPCBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

@@ -21,7 +21,8 @@ UBTTask_BlockThreat::UBTTask_BlockThreat()
 	, MaxAvoidanceDistance(500.0f)
 	, Principal(nullptr)
 	, MinDistanceToThreat(300.0f)
-
+	, ThreatAvoidanceWeight(.5f)
+	, ThreatAvoidanceRadius(200.f)
 {
 	NodeName = TEXT("Block Threat");
 	bNotifyTick = true;
@@ -64,19 +65,11 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 {
     Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-    AActor* OwnerActor = OwnerComp.GetOwner();
-
-    if (!OwnerActor)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[UBTTask_BlockThreat::TickTask] Owner Actor is invalid"));
-        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-        return;
-    }
-
 	const FVector NPCLocation = NPC->GetActorLocation();
 	const FVector PrincipalLocation = Principal->GetActorLocation();
     const FVector ThreatLocation = NPC->GetSentinelController()->GetThreatLocation();
-    const FVector DesiredLocation = PrincipalLocation + (ThreatLocation - PrincipalLocation).GetSafeNormal() *
+	const FVector ToThreat = ThreatLocation - PrincipalLocation;
+    const FVector DesiredLocation = PrincipalLocation + ToThreat.GetSafeNormal() *
 	    DistanceInFrontOfPrincipal;
 	
 	if(FVector::DistSquared(DesiredLocation, NPCLocation) < AcceptanceRadius * AcceptanceRadius)
@@ -89,25 +82,20 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	const FVector ToPrincipal = (PrincipalLocation - NPCLocation);
 	const float SqrDistanceToPrincipal = ToPrincipal.SquaredLength();
 
-    // Check if the path to the desired position is clear of any agents
-    FHitResult HitResult;
-    FCollisionQueryParams CollisionParams;
-    //CollisionParams.AddIgnoredActors(ActorsToIgnore); // Add agents to ignore for the collision check
-
-    // Path is clear, proceed with steering behavior
-	FVector SteeringDirection = DesiredDirection.GetSafeNormal();
+	FVector SteeringDirection = DesiredDirection.GetSafeNormal() * BlockLocationWeight;
 	SteeringDirection += Principal->GetMovementComponent()->Velocity.GetSafeNormal(); // follow along with principal
 
     // Draw a debug sphere at the desired position
     DrawDebugSphere(GetWorld(), DesiredLocation, 50.0f, 8, FColor::Green, false, -1, 0, 1);
-
-    // Avoid the principal
-	if(SqrDistanceToPrincipal < MinDistanceToPrincipal * MinDistanceToPrincipal)
+	SteeringDirection += CalculateThreatAvoidance();
+	
+	// Avoid the principal
+	if(SqrDistanceToPrincipal < MinDistanceToPrincipal * MinDistanceToPrincipal || FVector::DotProduct(ToPrincipal, ToThreat) > 0)
 	{ 
 		FVector AvoidanceDirection = FVector::CrossProduct(ToPrincipal, FVector::UpVector).GetSafeNormal();
-		SteeringDirection += AvoidanceDirection * 1.0f + DistanceInFrontOfPrincipal / (SqrDistanceToPrincipal+1.0f) ;
+		SteeringDirection += AvoidanceDirection * 1.0f + DistanceInFrontOfPrincipal / (SqrDistanceToPrincipal+1.0f);
 	}
-
+	
 	// Move
     if (NPCMovement)
     {
@@ -119,4 +107,26 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
     {
         UE_LOG(LogTemp, Warning, TEXT("[UBTTask_BlockThreat::TickTask] NPCController is nullptr!"));
     }
+}
+
+FVector UBTTask_BlockThreat::CalculateThreatAvoidance()
+{
+	FVector ThreatAvoidance;
+	
+	TSet<ASentinelCharacter*> SeenThreats = NPCController->GetSeenThreats();
+	for(ASentinelCharacter* Threat : SeenThreats)
+	{
+		FVector FromThreat =  NPCController->GetCharacter()->GetActorLocation() - Threat->GetActorLocation();
+		float SqrDistanceToThreat =  FromThreat.SquaredLength();
+		
+		// This target is a threat, apply avoidance logic
+		if(FromThreat.SquaredLength() < ThreatAvoidanceRadius * ThreatAvoidanceRadius)
+		{
+			FVector AvoidanceDirection = FromThreat.GetSafeNormal();
+			ThreatAvoidance  += AvoidanceDirection * 1.0f + ThreatAvoidanceRadius / (SqrDistanceToThreat+1.0f);
+		}
+	}
+
+	ThreatAvoidance.Normalize();
+	return ThreatAvoidance * ThreatAvoidanceWeight;
 }

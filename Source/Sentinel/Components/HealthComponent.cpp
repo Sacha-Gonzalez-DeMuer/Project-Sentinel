@@ -27,6 +27,7 @@ void UHealthComponent::TakeDamage(const int Amount, ASentinelCharacter* Instigat
 	//OnTakeDamage.Broadcast();
 	
 	if(ASentinelController* SentinelController = Character->GetSentinelController())
+		if (!Instigator->IsAlly(Character))
 	{
 		SentinelController->AddSeenThreat(Instigator);
 	}
@@ -82,6 +83,11 @@ void UHealthComponent::SetParentCharacter(ASentinelCharacter* Parent)
 	Character = Parent;
 }
 
+void UHealthComponent::SetCanBeRevived(bool _CanBeRevived)
+{
+	CanBeRevived = _CanBeRevived;
+}
+
 bool UHealthComponent::IsOnLastStand() const
 {
 	return _IsOnLastStand;
@@ -99,6 +105,10 @@ void UHealthComponent::BeginPlay()
 
 void UHealthComponent::Die()
 {
+	UE_LOG(LogTemp, Log, TEXT("[UHealthComponent::Die] %s has died. CanBeRevived: %d, ReviveCooldownTimer: %f, !_IsOnLastStand: %d"),
+	  *GetOwner()->GetName(), CanBeRevived, ReviveCooldownTimer, !_IsOnLastStand);
+
+	
 	if(CanBeRevived && ReviveCooldownTimer <= 0 && !_IsOnLastStand)
 	{
 		UE_LOG(LogTemp, Log, TEXT("final stand"));
@@ -113,9 +123,8 @@ void UHealthComponent::Die()
 	{
 		UE_LOG(LogTemp, Log, TEXT("deded x.x"));
 		_IsOnLastStand = false;
-		OnDeath.Broadcast();
-		
 		Character->OnDeath();
+		OnDeath.Broadcast();
 	}
 }
 

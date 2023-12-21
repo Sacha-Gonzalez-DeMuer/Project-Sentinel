@@ -30,7 +30,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float AcceptanceRadius;
-
 	
 	// The maximum distance at which the NPC will consider the threat for avoidance.
 	UPROPERTY(EditAnywhere)
@@ -42,6 +41,15 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	float MinDistanceToPrincipal;
+
+	UPROPERTY(EditAnywhere)
+	float ThreatAvoidanceWeight;
+	
+	UPROPERTY(EditAnywhere) // radius at which the threat avoidance logic will kick in
+	float ThreatAvoidanceRadius;
+
+	UPROPERTY(EditAnywhere)
+	float BlockLocationWeight;
 
 	
 private:
@@ -62,4 +70,7 @@ private:
 
 	UPROPERTY()
 	ASentinelSquad* Squad;
+
+
+	FVector CalculateThreatAvoidance();
 };

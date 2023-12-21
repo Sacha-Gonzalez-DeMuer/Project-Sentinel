@@ -32,7 +32,7 @@ void AZombSentinel::BeginPlay()
 	if(HealthComponent)
 	{
 		//HealthComponent->OnDeath.AddDynamic(this, &AZombSentinel::OnDeath);
-		HealthComponent->OnLastStand.AddDynamic(this, &AZombSentinel::OnLastStand);
+		HealthComponent->SetCanBeRevived(false);
 		HealthComponent->SetParentCharacter(this);
 	}
 	else UE_LOG(LogTemp, Warning, TEXT("ZombSentinel.cpp: NPCBase failed to setup healthcomponent"))
@@ -57,12 +57,7 @@ void AZombSentinel::OnDeath()
 {
 	GetSquad()->LeaveSquad(this);
 	ZombController->OnDeath();
-	Destroy();
-}
 
-void AZombSentinel::OnLastStand()
-{
-	GetSquad()->RequestMedic(this);
-	
-	ZombController->OnLastStand();
+	UE_LOG(LogTemp, Log, TEXT("Destroying Zomb (OnDeath)"));
+	Destroy();
 }

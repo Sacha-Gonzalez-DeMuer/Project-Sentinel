@@ -472,6 +472,11 @@ ASentinelCharacter* ASentinelController::GetTarget() const
 		BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)));
 }
 
+TSet<ASentinelCharacter*> ASentinelController::GetSeenThreats() const
+{
+	return SeenThreats;
+}
+
 void ASentinelController::SetRole(ERoles toRole)
 {
 	BlackboardComponent->SetValueAsEnum(FName(BBKeys::Role), static_cast<uint8>(toRole));

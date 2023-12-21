@@ -80,6 +80,7 @@ public:
 	
 	ASentinelCharacter* GetPrincipal() const;
 	ASentinelCharacter* GetTarget() const;
+	TSet<ASentinelCharacter*> GetSeenThreats() const;
 
 
 	void SetRole(ERoles toRole);

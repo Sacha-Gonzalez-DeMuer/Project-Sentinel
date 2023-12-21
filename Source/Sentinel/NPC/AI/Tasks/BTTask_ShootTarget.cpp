@@ -11,7 +11,6 @@
 UBTTask_ShootTarget::UBTTask_ShootTarget()
 	: Target(nullptr)
 	, NPCBase(nullptr)
-	
 {
 	NodeName = TEXT("Shoot Target");
 	bNotifyTick = true;
@@ -39,6 +38,37 @@ void UBTTask_ShootTarget::TickTask(UBehaviorTreeComponent& ownerComp, uint8* nod
 	{
 		FinishLatentTask(ownerComp, EBTNodeResult::Failed);
 		return;
+	}
+
+	// Check for allies in the path before shooting
+	FVector StartLocation = NPCBase->GetActorLocation();
+	FVector EndLocation = Target->GetActorLocation();
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(NPCBase); // Ignore the shooting NPC
+
+
+	// Perform raycastss
+	if (ownerComp.GetOwner()->GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Pawn, CollisionParams))
+	{
+		// Check if the hit actor is an ally
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[UBTTask_ShootTarget::TickTask] Hit actor found: %s"), *HitActor->GetName());
+
+			// Check if the hit actor is an ally
+			if (ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(HitActor))
+			{
+				if (Sentinel->IsAlly(NPCBase->GetFactionIdx()))
+				{
+					// Ally in the path, stop shooting
+					UE_LOG(LogTemp, Warning, TEXT("[UBTTask_ShootTarget::TickTask] Ally in the path, stop shooting."));
+					FinishLatentTask(ownerComp, EBTNodeResult::Failed);
+					return;
+				}
+			}
+		}
 	}
 	
 	// Set the spawn parameters

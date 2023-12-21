@@ -21,27 +21,13 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 			// Seen player!
 			// UE_LOG(LogTemp, Log, TEXT("Seen player!"));
 		}
-		else if (Cast<ANPCBase>(Sentinel))
+		else if (!Sentinel->IsAlly(NPCBase))
 		{
-			// Immediately attack if its a zomb (temp)
-			if(Cast<AZombSentinel>(Sentinel)) 
-			{
-				AddThreat(Sentinel);
-				SetTarget(Sentinel);
-			} else
-			{
-				int SSFactionIdx = Sentinel->GetFactionIdx();
-				// int SSSquadIdx = Sentinel->GetSquad();
-
-				if (SSFactionIdx != NPCBase->GetFactionIdx())
-				{
-					AddThreat(Sentinel);
-				}
-			}
+			AddThreat(Sentinel);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Seen unknown pawn"));
+			UE_LOG(LogTemp, Log, TEXT("Guardian %s saw an unknown Sentinel: %s"), *NPCBase->GetName(), *Sentinel->GetName());
 		}
 	}
 }
@@ -55,7 +41,6 @@ void AGuardianController::OnLastStand()
 void AGuardianController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 	if(NPCBase->GetHealthComponent()->GetHealth() <= 0) return;
 
 	

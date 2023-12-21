@@ -96,7 +96,6 @@ bool ASentinelCharacter::IsOnLastStand() const
 
 void ASentinelCharacter::Attack(const ASentinelCharacter* Target, float Damage)
 {
-	UE_LOG(LogTemp, Log, TEXT("Attacking target, Attacker %s"), *GetName());
 	Target->GetHealthComponent()->TakeDamage(Damage, this);
 }
 

@@ -52,8 +52,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetLastStandTimerPercent() const;
-	
+
 	void SetParentCharacter(ASentinelCharacter* Parent);
+	void SetCanBeRevived(bool _CanBeRevived);
 	bool IsOnLastStand() const;
 	virtual void Revive();
 protected:

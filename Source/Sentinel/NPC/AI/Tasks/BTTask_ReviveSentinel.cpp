@@ -3,6 +3,7 @@
 
 #include "Sentinel/NPC/AI/Tasks/BTTask_ReviveSentinel.h"
 
+#include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sentinel/SentinelCharacter.h"
@@ -17,25 +18,30 @@ UBTTask_ReviveSentinel::UBTTask_ReviveSentinel()
 
 EBTNodeResult::Type UBTTask_ReviveSentinel::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	ANPCBase* OwnerNPCBase = Cast<ANPCBase>(OwnerComp.GetAIOwner()->GetPawn());
+	if(!OwnerNPCBase)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[UBTTask_ReviveSentinel::ExecuteTask] FAILED TO SETUP NPC"));
+		return EBTNodeResult::Failed;
+	}
+
 	if(ASentinelCharacter* Patient = Cast<ASentinelCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(SentinelToRevive.SelectedKeyName)))
 	{
 		ToRevive = Patient;
 		if(ToRevive->IsOnLastStand())
 		{
 			ToRevive->GetHealthComponent()->Revive();
-			KillNearbySentinels(OwnerComp, NodeMemory);
+			KillNearbySentinels(OwnerNPCBase);
 		}
-	
 		return EBTNodeResult::Succeeded;
 	}
 	
-	return EBTNodeResult::Failed;;
+	return EBTNodeResult::Failed;
 }
 
-void UBTTask_ReviveSentinel::KillNearbySentinels(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+void UBTTask_ReviveSentinel::KillNearbySentinels(ANPCBase* OwnerNPCBase)
 {
-	ANPCBase* NPC = Cast<ANPCBase>(OwnerComp.GetOwner());
-	const FVector NPCLocation = NPC->GetActorLocation();
+	const FVector NPCLocation = OwnerNPCBase->GetActorLocation();
 
 	// Get all sentinel characters within the specified radius
 	TArray<AActor*> FoundActors;
@@ -46,15 +52,15 @@ void UBTTask_ReviveSentinel::KillNearbySentinels(UBehaviorTreeComponent& OwnerCo
 		if(!Actor->IsValidLowLevel()) continue;
 		
 		ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(Actor);
-		if (Sentinel && Sentinel != NPC && !Sentinel->IsAlly(NPC))
+		if (Sentinel && Sentinel != OwnerNPCBase && !Sentinel->IsAlly(OwnerNPCBase))
 		{
 			const float DistanceToSentinel = FVector::DistSquared(NPCLocation, Sentinel->GetActorLocation());
 
 			// Check if the sentinel is within the specified radius
 			if (DistanceToSentinel <= DamageRadius * DamageRadius)
 			{
-				// Kill the sentinel
-				Sentinel->GetHealthComponent()->TakeDamage(DamageToNearbyEnemySentinels, NPC);
+				// Kill the sentinel     
+				Sentinel->GetHealthComponent()->TakeDamage(DamageToNearbyEnemySentinels, OwnerNPCBase);
 			}
 		}
 	}

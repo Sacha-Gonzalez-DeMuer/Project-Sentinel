@@ -31,7 +31,6 @@ private:
 	virtual FString GetStaticDescription() const override;
 
 	void LookAtTarget() const;
-
 	
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector TargetKey;
