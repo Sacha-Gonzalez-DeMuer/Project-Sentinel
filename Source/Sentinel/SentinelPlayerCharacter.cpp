@@ -31,3 +31,10 @@ void ASentinelPlayerCharacter::BeginPlay()
 	if(!HealthComponent)
 		UE_LOG(LogTemp, Error, TEXT("HealthComponent not linked in SentinelPlayerCharacter"));
 }
+
+void ASentinelPlayerCharacter::OnDeath()
+{
+	Super::OnDeath();
+
+	UE_LOG(LogTemp, Error, TEXT("=================> PLAYER DIED <================="));
+}

@@ -25,6 +25,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void OnDeath() override;
 	
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

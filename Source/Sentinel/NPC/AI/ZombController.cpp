@@ -3,6 +3,7 @@
 
 #include "Sentinel/NPC/AI/ZombController.h"
 
+#include "Sentinel/SentinelPlayerCharacter.h"
 #include "Sentinel/Components/HealthComponent.h"
 #include "Sentinel/NPC/GuardianSentinel.h"
 #include "Sentinel/NPC/NPCBase.h"
@@ -21,7 +22,7 @@ void AZombController::OnSeePawn(APawn* SeenPawn)
 {
 	if (ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(SeenPawn))
 	{
-		if (APlayerController* PlayerController = Cast<APlayerController>(SeenPawn->GetController()))
+		if (ASentinelPlayerCharacter* PlayerSentinel = Cast<ASentinelPlayerCharacter>(SeenPawn))
 		{
 			AddThreat(Sentinel);
 		}

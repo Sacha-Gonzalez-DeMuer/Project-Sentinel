@@ -68,6 +68,12 @@ void UBTTask_ShootTarget::TickTask(UBehaviorTreeComponent& ownerComp, uint8* nod
 					return;
 				}
 			}
+			else
+			{
+				// Something in the way, stop shooting.
+				FinishLatentTask(ownerComp, EBTNodeResult::Failed);
+				return;
+			}
 		}
 	}
 	

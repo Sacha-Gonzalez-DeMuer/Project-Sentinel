@@ -61,3 +61,9 @@ void AZombSentinel::OnDeath()
 	UE_LOG(LogTemp, Log, TEXT("Destroying Zomb (OnDeath)"));
 	Destroy();
 }
+
+void AZombSentinel::OnLastStand()
+{
+	UE_LOG(LogTemp, Error, TEXT("Zomb OnLastStand "));
+
+}

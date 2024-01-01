@@ -88,7 +88,8 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
     // Draw a debug sphere at the desired position
     DrawDebugSphere(GetWorld(), DesiredLocation, 50.0f, 8, FColor::Green, false, -1, 0, 1);
 	SteeringDirection += CalculateThreatAvoidance();
-	
+	DrawDebugSphere(GetWorld(), ThreatLocation, 50.0f, 8, FColor::Red, false, -1, 0, 1);
+
 	// Avoid the principal
 	if(SqrDistanceToPrincipal < MinDistanceToPrincipal * MinDistanceToPrincipal || FVector::DotProduct(ToPrincipal, ToThreat) > 0)
 	{ 

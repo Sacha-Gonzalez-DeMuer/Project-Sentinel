@@ -21,7 +21,7 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 			// Seen player!
 			// UE_LOG(LogTemp, Log, TEXT("Seen player!"));
 		}
-		else if (!Sentinel->IsAlly(NPCBase))
+		else if (!NPCBase->IsAlly(Sentinel))
 		{
 			AddThreat(Sentinel);
 		}

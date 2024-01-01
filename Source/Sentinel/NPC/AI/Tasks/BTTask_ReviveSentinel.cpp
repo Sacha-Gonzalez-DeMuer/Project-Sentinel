@@ -60,7 +60,10 @@ void UBTTask_ReviveSentinel::KillNearbySentinels(ANPCBase* OwnerNPCBase)
 			if (DistanceToSentinel <= DamageRadius * DamageRadius)
 			{
 				// Kill the sentinel     
-				Sentinel->GetHealthComponent()->TakeDamage(DamageToNearbyEnemySentinels, OwnerNPCBase);
+				if(UHealthComponent* SentinelHealthComponent = Sentinel->GetHealthComponent())
+					SentinelHealthComponent->TakeDamage(DamageToNearbyEnemySentinels, OwnerNPCBase);
+				else
+					UE_LOG(LogTemp, Error, TEXT("[UBTTask_ReviveSentinel::KillNearbySentinels] No Health Component?"));
 			}
 		}
 	}

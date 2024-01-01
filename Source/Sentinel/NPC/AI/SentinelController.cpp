@@ -404,12 +404,11 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 	//const int ThreatSquadSize = ThreatSquad->GetNrSentinels();
 
 
-	/*
 	const float DistanceToTarget = FVector::Dist(_SentinelCharacter->GetActorLocation(), _SentinelCharacter->GetActorLocation());
 	const float MaxDistance = 1000.0f; 
 	const float DistanceWeight = FMath::Lerp(0.0f, 1.0f, FMath::Clamp(DistanceToTarget / MaxDistance, 0.0f, 10000.0f));
 	PriorityEvaluation += DistanceWeight;
-	*/
+
 	
 	// Adjust PriorityEvaluation based on squared distance
 	PriorityEvaluation += _SentinelCharacter->GetSentinelController()->GetThreatToTarget();
