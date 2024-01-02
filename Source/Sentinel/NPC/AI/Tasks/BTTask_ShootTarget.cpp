@@ -55,15 +55,12 @@ void UBTTask_ShootTarget::TickTask(UBehaviorTreeComponent& ownerComp, uint8* nod
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[UBTTask_ShootTarget::TickTask] Hit actor found: %s"), *HitActor->GetName());
-
 			// Check if the hit actor is an ally
 			if (ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(HitActor))
 			{
 				if (Sentinel->IsAlly(NPCBase->GetFactionIdx()))
 				{
 					// Ally in the path, stop shooting
-					UE_LOG(LogTemp, Warning, TEXT("[UBTTask_ShootTarget::TickTask] Ally in the path, stop shooting."));
 					FinishLatentTask(ownerComp, EBTNodeResult::Failed);
 					return;
 				}

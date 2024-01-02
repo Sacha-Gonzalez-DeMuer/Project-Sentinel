@@ -18,16 +18,24 @@
 #include "Sentinel/Actors/SentinelSquad.h"
 #include "Sentinel/Actors/SentinelFaction.h"
 #include "Sentinel/NPC/SentinelDirector.h"
+#include "Steering/Follow.h"
+#include "Steering/SteeringBehavior.h"
 
 
 ASentinelController::ASentinelController(const FObjectInitializer& ObjectInitializer)
 	: RetargetingInterval(1.0f),
 	ThreatUpdateInterval(.5f),
+	MoveUpdateInterval(.5f),
 	RetargetingIntervalTimer(0.1f),
-	ThreatUpdateTimer(0.1f)
+	ThreatUpdateTimer(0.1f),
+	CurrentSteering(nullptr),
+	MoveUpdateTimer(0.1f)
 {
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior Tree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
+
+	FollowSteering = CreateDefaultSubobject<UFollow>(TEXT("Follow Component"));
+	CurrentSteering = FollowSteering;
 }
 
 void ASentinelController::BeginPlay()
@@ -51,6 +59,16 @@ void ASentinelController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	
+	if(MoveUpdateTimer > 0)
+	{
+		MoveUpdateTimer -= DeltaSeconds;
+		if(MoveUpdateTimer <= 0)
+		{
+			UpdateMovement(DeltaSeconds);
+			MoveUpdateTimer = MoveUpdateInterval;
+		}
+	}
 }
 
 void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
@@ -202,6 +220,17 @@ void ASentinelController::UpdateThreatToTargetTimer(float DeltaSeconds)
 			ThreatUpdateTimer = ThreatUpdateInterval;
 		}
 	}
+}
+
+void ASentinelController::UpdateMovement(float DeltaTime)
+{
+	if(!CurrentSteering) return;
+	const FVector Steering = CurrentSteering->CalculateSteering(NPCBase);
+	FVector TargetLocation = NPCBase->GetActorLocation() + Steering;
+	UE_LOG(LogTemp, Log, TEXT("[ASentinelController::UpdateMovement] %s Updating movement; %s"), *NPCBase->GetName(), *Steering.ToString());
+
+	if(FVector::DistSquared(NPCBase->GetActorLocation(), TargetLocation) > 200.0f)
+	MoveTo(TargetLocation);
 }
 
 bool ASentinelController::IsAttacking() const
@@ -366,6 +395,7 @@ void ASentinelController::RecalculateTargetPriority()
 			return;
 		}
 	}
+	
 	SetDefaultTarget();
 }
 
@@ -406,7 +436,7 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 
 	const float DistanceToTarget = FVector::Dist(_SentinelCharacter->GetActorLocation(), _SentinelCharacter->GetActorLocation());
 	const float MaxDistance = 1000.0f; 
-	const float DistanceWeight = FMath::Lerp(0.0f, 1.0f, FMath::Clamp(DistanceToTarget / MaxDistance, 0.0f, 10000.0f));
+	const float DistanceWeight = FMath::Lerp(10000.0f, 0.0f, FMath::Clamp(DistanceToTarget / MaxDistance, 0.0f, 10000.0f));
 	PriorityEvaluation += DistanceWeight;
 
 	
@@ -476,7 +506,12 @@ TSet<ASentinelCharacter*> ASentinelController::GetSeenThreats() const
 	return SeenThreats;
 }
 
-void ASentinelController::SetRole(ERoles toRole)
+void ASentinelController::SetRole(ERoles toRole) const
 {
 	BlackboardComponent->SetValueAsEnum(FName(BBKeys::Role), static_cast<uint8>(toRole));
+}
+
+UFollow* ASentinelController::GetFollowComponent() const
+{
+	return FollowSteering;
 }

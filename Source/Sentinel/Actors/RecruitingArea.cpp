@@ -7,6 +7,7 @@
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/SentinelPlayerCharacter.h"
 #include "Sentinel/NPC/AI/SentinelController.h"
+#include "Sentinel/NPC/AI/Steering/Follow.h"
 
 // Sets default values
 ARecruitingArea::ARecruitingArea()
@@ -38,14 +39,19 @@ void ARecruitingArea::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		if(ASentinelPlayerCharacter* Player = Cast<ASentinelPlayerCharacter>(OtherActor))
 		{
+			UE_LOG(LogTemp, Log, TEXT("Player recruiting! %s"), *Player->GetName());
+
 			for(ASentinelCharacter* Sentinel : Sentinels)
 			{
 				Sentinel->SetFaction(Player->GetFactionIdx());
 				Sentinel->GetSentinelController()->SetPrincipal(Player);
+				Sentinel->GetSentinelController()->GetFollowComponent()->SetToFollow(Player);
 			}
 
 			for(AActor* Actor : ToRemove)
 			{
+				if(!Actor->IsValidLowLevel()) continue;
+				
 				Actor->Destroy();
 			}
 		}

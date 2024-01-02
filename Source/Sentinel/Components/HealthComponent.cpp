@@ -8,7 +8,7 @@
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
-	: CurrentHealth(MaxHealth), LastStandTime(3.0f), ReviveRechargeTime(1.0f)
+	: LastStandTime(3.0f), CurrentHealth(MaxHealth), ReviveRechargeTime(1.0f)
 	, ReviveCooldownTime(1.0f), ReviveCooldownTimer(0.0f), LastStandTimer(0), Character(nullptr), _IsOnLastStand(false)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features

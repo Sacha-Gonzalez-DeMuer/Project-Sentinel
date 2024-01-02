@@ -7,6 +7,7 @@
 #include "Sentinel/Components/HealthComponent.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "Sentinel/NPC/ZombSentinel.h"
+#include "Steering/Follow.h"
 
 AGuardianController::AGuardianController(FObjectInitializer const& objectInit)
 {

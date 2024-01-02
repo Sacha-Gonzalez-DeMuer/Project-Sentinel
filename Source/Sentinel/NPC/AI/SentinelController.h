@@ -8,6 +8,8 @@
 #include "Sentinel/Actors/SentinelSquad.h"
 #include "SentinelController.generated.h"
 
+class UFollow;
+class USteeringBehavior;
 class UBehaviorTree;
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
@@ -61,6 +63,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	float ThreatUpdateInterval;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
+	float MoveUpdateInterval;
+
 	float GetThreatToTarget();
 	float GetThreatToPrincipal() const;
 	FVector GetThreatLocation() const;
@@ -83,7 +88,8 @@ public:
 	TSet<ASentinelCharacter*> GetSeenThreats() const;
 
 
-	void SetRole(ERoles toRole);
+	void SetRole(ERoles toRole) const;
+	UFollow* GetFollowComponent() const;
 	
 protected:
 
@@ -96,6 +102,7 @@ protected:
 	void UpdateRetargetingTimer(float DeltaSeconds);
 	void UpdateThreatToTargetTimer(float DeltaSeconds);
 
+	void UpdateMovement(float DeltaTime);
 	
 	UPROPERTY()
 	ANPCBase* NPCBase;
@@ -106,16 +113,21 @@ protected:
 	UPROPERTY()
 	TSet<ASentinelCharacter*> SeenThreats;
 
+	UPROPERTY()
+	USteeringBehavior* CurrentSteering;
+	
+	UPROPERTY(EditAnywhere)
+	UFollow* FollowSteering;
 	
 	// How much of a threat is this NPC to the NPC it's currently targeting
 	float EvaluateThreatToTarget();
-
 	void SetDefaultTarget() const;
 private:
 	bool bIsAttacking;
 	
 	float RetargetingIntervalTimer;
 	float ThreatUpdateTimer;
+	float MoveUpdateTimer;
 	
 	float ThreatToTarget;
 	float ThreatToPrincipal;
@@ -130,4 +142,5 @@ private:
 	FVector CalculateProtectivePos(const ASentinelCharacter* Protectee, const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee);
 	FVector CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid);
 	FVector CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid);
+
 };

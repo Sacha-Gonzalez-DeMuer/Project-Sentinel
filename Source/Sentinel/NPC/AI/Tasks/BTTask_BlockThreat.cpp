@@ -17,8 +17,8 @@ UBTTask_BlockThreat::UBTTask_BlockThreat()
 	, AvoidanceWeight(.5f)
 	, AcceptanceRadius(5.0f)
 	, NPC(nullptr)
-	, NPCController(nullptr)
 	, MaxAvoidanceDistance(500.0f)
+	, NPCController(nullptr)
 	, Principal(nullptr)
 	, MinDistanceToThreat(300.0f)
 	, ThreatAvoidanceWeight(.5f)
@@ -87,7 +87,8 @@ void UBTTask_BlockThreat::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
     // Draw a debug sphere at the desired position
     DrawDebugSphere(GetWorld(), DesiredLocation, 50.0f, 8, FColor::Green, false, -1, 0, 1);
-	SteeringDirection += CalculateThreatAvoidance();
+//	SteeringDirection += CalculateThreatAvoidance();
+//	SteeringDirection += CalculateAllyAvoidance();
 	DrawDebugSphere(GetWorld(), ThreatLocation, 50.0f, 8, FColor::Red, false, -1, 0, 1);
 
 	// Avoid the principal
@@ -131,3 +132,24 @@ FVector UBTTask_BlockThreat::CalculateThreatAvoidance()
 	ThreatAvoidance.Normalize();
 	return ThreatAvoidance * ThreatAvoidanceWeight;
 }
+// FVector UBTTask_BlockThreat::CalculateAllyAvoidance()
+// {
+// 	FVector AllyAvoidance;
+//
+// 	ASentinelSquad* SentinelSquad = NPC->GetSquad();
+//
+// 	for(ASentinelCharacter* Ally : SentinelSquad->GetSentinels())
+// 	{
+// 		FVector FromThreat =  NPCController->GetCharacter()->GetActorLocation() - Ally->GetActorLocation();
+// 		float SqrDistanceToThreat =  FromThreat.SquaredLength();
+// 		
+// 		// This target is a threat, apply avoidance logic
+// 		if(FromThreat.SquaredLength() < AllyAvoidanceRadius * AllyAvoidanceRadius)
+// 		{
+// 			FVector AvoidanceDirection = FromThreat.GetSafeNormal();
+// 			AllyAvoidance  += AvoidanceDirection * 1.0f + ThreatAvoidanceRadius / (SqrDistanceToThreat+1.0f);
+// 		}
+// 	}
+//
+// 	return AllyAvoidance * AllyAvoidanceWeight;
+// }

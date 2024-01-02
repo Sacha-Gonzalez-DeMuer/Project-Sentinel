@@ -55,4 +55,6 @@ private:
 
 	UPROPERTY()
 	ANPCBase* NPCBase;
+
+	float ShotCooldownTimer = 0;
 };

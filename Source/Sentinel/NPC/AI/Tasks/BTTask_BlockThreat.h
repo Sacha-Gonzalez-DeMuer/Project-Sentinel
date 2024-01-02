@@ -68,9 +68,8 @@ private:
 	UPROPERTY()
 	UPawnMovementComponent* NPCMovement;
 
-	UPROPERTY()
-	ASentinelSquad* Squad;
-
 
 	FVector CalculateThreatAvoidance();
+	//FVector CalculateAllyAvoidance();
+
 };
