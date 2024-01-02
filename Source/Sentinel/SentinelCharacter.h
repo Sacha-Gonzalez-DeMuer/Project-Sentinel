@@ -46,7 +46,6 @@ public:
 
 	virtual void Attack(const ASentinelCharacter* Target, float Damage);
 
-	
 	UFUNCTION()
 	virtual void OnDeath();
 

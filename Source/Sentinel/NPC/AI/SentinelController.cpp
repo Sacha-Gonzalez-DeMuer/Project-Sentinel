@@ -18,6 +18,7 @@
 #include "Sentinel/Actors/SentinelSquad.h"
 #include "Sentinel/Actors/SentinelFaction.h"
 #include "Sentinel/NPC/SentinelDirector.h"
+#include "Steering/BlockThreat.h"
 #include "Steering/Follow.h"
 #include "Steering/SteeringBehavior.h"
 
@@ -34,8 +35,11 @@ ASentinelController::ASentinelController(const FObjectInitializer& ObjectInitial
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior Tree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
 
+	BlockThreatSteering = CreateDefaultSubobject<UBlockThreat>(TEXT("Threat Blocking Component"));
+	BlockThreatSteering->SetBlackboard(BlackboardComponent);
+	
+	CurrentSteering = BlockThreatSteering;
 	FollowSteering = CreateDefaultSubobject<UFollow>(TEXT("Follow Component"));
-	CurrentSteering = FollowSteering;
 }
 
 void ASentinelController::BeginPlay()
@@ -227,7 +231,7 @@ void ASentinelController::UpdateMovement(float DeltaTime)
 	if(!CurrentSteering) return;
 	const FVector Steering = CurrentSteering->CalculateSteering(NPCBase);
 	FVector TargetLocation = NPCBase->GetActorLocation() + Steering;
-
+	UE_LOG(LogTemp, Log, TEXT("Current Steering: %s"), *CurrentSteering->GetName());
 	if(FVector::DistSquared(NPCBase->GetActorLocation(), TargetLocation) > 200.0f)
 	MoveTo(TargetLocation);
 }
@@ -441,7 +445,8 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 	// Adjust PriorityEvaluation based on squared distance
 	if(ASentinelPlayerCharacter* IsPlayer = Cast<ASentinelPlayerCharacter>(_SentinelCharacter))
 	{
-		
+		constexpr float PlayerThreatLevel = 9001.0f; // !!!!
+		PriorityEvaluation += PlayerThreatLevel;
 	}
 	else
 	{
@@ -520,4 +525,9 @@ void ASentinelController::SetRole(ERoles toRole) const
 UFollow* ASentinelController::GetFollowComponent() const
 {
 	return FollowSteering;
+}
+
+UBlockThreat* ASentinelController::GetThreatBlockingComponent() const
+{
+	return BlockThreatSteering;
 }

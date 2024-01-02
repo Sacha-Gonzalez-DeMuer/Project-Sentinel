@@ -9,13 +9,19 @@
   <component name="ChangeListManager">
     <list default="true" id="0ef0564c-df40-4555-9708-27324c4e501a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sentinel.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_ZombSentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BB_Sentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BB_Sentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BP_GuardianController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BP_GuardianController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_Guardian.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/BP_DamageBullet.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/BP_DamageBullet.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_GuardianSentinel.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Actors/NPC/BP_GuardianSentinel.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/Actors/RecruitingArea.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/Actors/RecruitingArea.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/SentinelController.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Steering/Follow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Steering/Follow.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/Tasks/BTTask_BlockThreat.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/AI/ZombController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/NPC/ZombSentinel.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Sentinel/SentinelCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +131,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1704204461890</updated>
-      <workItem from="1704204466792" duration="11180000" />
+      <workItem from="1704204466792" duration="21645000" />
     </task>
     <servers />
   </component>

@@ -50,8 +50,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float BlockLocationWeight;
-
-	
 private:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& ownerComp, uint8* nodeMemory, float deltaSeconds) override;

@@ -38,7 +38,6 @@ EBTNodeResult::Type UBTTask_BlockThreat::ExecuteTask(UBehaviorTreeComponent& Own
 		UE_LOG(LogTemp, Warning, TEXT("BlockThreat task failed"));
 		return EBTNodeResult::Failed;
 	}
-
 	
 	NPC = Cast<ANPCBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!NPC)

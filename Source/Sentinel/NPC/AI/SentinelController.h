@@ -8,6 +8,7 @@
 #include "Sentinel/Actors/SentinelSquad.h"
 #include "SentinelController.generated.h"
 
+class UBlockThreat;
 class UFollow;
 class USteeringBehavior;
 class UBehaviorTree;
@@ -87,10 +88,9 @@ public:
 	ASentinelCharacter* GetTarget() const;
 	TSet<ASentinelCharacter*> GetSeenThreats() const;
 
-
 	void SetRole(ERoles toRole) const;
 	UFollow* GetFollowComponent() const;
-	
+	UBlockThreat* GetThreatBlockingComponent() const;
 protected:
 
 	bool HasTarget() const;
@@ -113,11 +113,13 @@ protected:
 	UPROPERTY()
 	TSet<ASentinelCharacter*> SeenThreats;
 
-	UPROPERTY()
 	USteeringBehavior* CurrentSteering;
 	
 	UPROPERTY(EditAnywhere)
 	UFollow* FollowSteering;
+
+	UPROPERTY(EditAnywhere)
+	UBlockThreat* BlockThreatSteering;
 	
 	// How much of a threat is this NPC to the NPC it's currently targeting
 	float EvaluateThreatToTarget();

@@ -135,37 +135,27 @@ FVector UFollow::Evade(const ASentinelCharacter* SteeringAgent, const ASentinelC
 
 FVector UFollow::Arrive(const ASentinelCharacter* SteeringAgent, const FVector& Target, float ArrivalRadius)
 {
-	// Calculate the desired velocity towards the target
-	FVector ToTarget = Target - SteeringAgent->GetActorLocation();
-	float Distance = ToTarget.Size();
-	const float halfArrivalRadius = ArriveRadius / 2.0f;
-
-	if(Distance< halfArrivalRadius) return {0,0,0};
-	// Check if the NPC is within the arrival radius
+	FVector DesiredVelocity = Target - SteeringAgent->GetActorLocation();
+	const float Distance = DesiredVelocity.Size();
+	const float MaxSpeed = SteeringAgent->GetMovementComponent()->GetMaxSpeed();
+	
 	if (Distance < ArrivalRadius)
 	{
-		// Normalize the vector and scale it based on the arrival radius
-		ToTarget.Normalize();
-		ToTarget *= ArrivalRadius;
-
-		// Adjust the distance for a smooth deceleration curve
-		Distance = FMath::Max(0.0f, Distance - ArrivalRadius);
-
-		// Calculate the speed factor
-		float SpeedFactor = Distance / ArrivalRadius;
-
-		// Adjust the speed factor for a smooth deceleration curve
-		SpeedFactor = FMath::Pow(SpeedFactor, 1);
-
-		// Apply the adjusted speed factor
-		ToTarget *= SpeedFactor;
+		// Inside the slowing area, apply slowing effect
+		const float SlowingFactor = MaxSpeed * (Distance / ArrivalRadius);
+		DesiredVelocity = DesiredVelocity.GetSafeNormal() * SlowingFactor;
+	}
+	else
+	{
+		// Outside the slowing area, use max speed
+		DesiredVelocity = DesiredVelocity.GetSafeNormal() * MaxSpeed;
 	}
 
-	// Calculate the steering force towards the desired velocity
-	FVector SteeringForce = ToTarget - SteeringAgent->GetVelocity();
+	// Calculate steering force
+	return DesiredVelocity - SteeringAgent->GetMovementComponent()->Velocity;
 
-	return SteeringForce;
 }
+
 
 FVector UFollow::Flee(const ASentinelCharacter* SteeringAgent,const FVector& TargetPosition)
 {

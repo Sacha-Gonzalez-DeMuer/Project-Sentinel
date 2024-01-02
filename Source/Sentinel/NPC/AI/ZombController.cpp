@@ -34,7 +34,6 @@ void AZombController::OnSeePawn(APawn* SeenPawn)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Zomb %s saw an unknown Sentinel: %s"), *NPCBase->GetName(), *Sentinel->GetName());
 		}
 	}
 }
