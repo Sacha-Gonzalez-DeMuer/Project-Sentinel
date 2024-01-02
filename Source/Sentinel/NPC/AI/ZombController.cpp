@@ -22,31 +22,19 @@ void AZombController::OnSeePawn(APawn* SeenPawn)
 {
 	if (ASentinelCharacter* Sentinel = Cast<ASentinelCharacter>(SeenPawn))
 	{
-		if (ASentinelPlayerCharacter* PlayerSentinel = Cast<ASentinelPlayerCharacter>(SeenPawn))
+		if (ASentinelPlayerCharacter* PlayerController = Cast<ASentinelPlayerCharacter>(Sentinel))
+		{
+			// Seen player!
+			UE_LOG(LogTemp, Log, TEXT("Zomb Seen player!"));
+			AddThreat(Sentinel);
+		}
+		else if (!NPCBase->IsAlly(Sentinel))
 		{
 			AddThreat(Sentinel);
 		}
-		else if (Cast<ANPCBase>(Sentinel))
-		{
-			// Immediately attack if its a zomb (temp)
-			if(Cast<AGuardianSentinel>(Sentinel)) 
-			{
-				AddThreat(Sentinel);
-				SetTarget(Sentinel);
-			} else
-			{
-				int SSFactionIdx = Sentinel->GetFactionIdx();
-				// int SSSquadIdx = Sentinel->GetSquad();
-
-				if (SSFactionIdx != NPCBase->GetFactionIdx())
-				{
-					AddThreat(Sentinel);
-				}
-			}
-		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Seen unknown pawn"));
+			UE_LOG(LogTemp, Log, TEXT("Zomb %s saw an unknown Sentinel: %s"), *NPCBase->GetName(), *Sentinel->GetName());
 		}
 	}
 }

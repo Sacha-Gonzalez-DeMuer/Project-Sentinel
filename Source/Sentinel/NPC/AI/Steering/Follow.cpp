@@ -15,7 +15,6 @@ UFollow::UFollow()
 FVector UFollow::CalculateSteering(const ASentinelCharacter* SteeringAgent)
 {
 	if(!ToFollow) return {0,0,0};
-	UE_LOG(LogTemp, Log, TEXT("Calcualting follow"));
 	const FVector LeaderLocation = ToFollow->GetActorLocation();
 	const FVector LeaderVelocity =  ToFollow->GetMovementComponent()->Velocity.GetSafeNormal();
 	

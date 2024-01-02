@@ -227,7 +227,6 @@ void ASentinelController::UpdateMovement(float DeltaTime)
 	if(!CurrentSteering) return;
 	const FVector Steering = CurrentSteering->CalculateSteering(NPCBase);
 	FVector TargetLocation = NPCBase->GetActorLocation() + Steering;
-	UE_LOG(LogTemp, Log, TEXT("[ASentinelController::UpdateMovement] %s Updating movement; %s"), *NPCBase->GetName(), *Steering.ToString());
 
 	if(FVector::DistSquared(NPCBase->GetActorLocation(), TargetLocation) > 200.0f)
 	MoveTo(TargetLocation);
@@ -293,7 +292,6 @@ void ASentinelController::SetDefaultTarget() const
 		}
 	}
 }
-
 
 float ASentinelController::EvaluateThreatToPrincipal(ASentinelCharacter* Threat)
 {
@@ -415,13 +413,13 @@ void ASentinelController::RecalculateThreatToPrincipal()
 
 float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelCharacter)
 {
-/*
-	*For now they calculate priority by taking the highest threat.
-	Influence it with squad threat level?
-	Influence it with how many squadmates are targeting the same threat / squad
-	Should priority calculation be the directors job?
-	No, Sentinels ultimately make the decisions based on their state. Director will change their state depending on current game state.
-*/
+	/*
+		*For now they calculate priority by taking the highest threat.
+		Influence it with squad threat level?
+		Influence it with how many squadmates are targeting the same threat / squad
+		Should priority calculation be the directors job?
+		No, Sentinels ultimately make the decisions based on their state. Director will change their state depending on current game state.
+	*/
 	if(_SentinelCharacter->GetHealthComponent()->IsOnLastStand()) return TNumericLimits<float>::Min();
 	
 	float PriorityEvaluation = 0;
@@ -441,8 +439,16 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 
 	
 	// Adjust PriorityEvaluation based on squared distance
-	PriorityEvaluation += _SentinelCharacter->GetSentinelController()->GetThreatToTarget();
-	PriorityEvaluation += ThreatSquad->GetAverageThreat();
+	if(ASentinelPlayerCharacter* IsPlayer = Cast<ASentinelPlayerCharacter>(_SentinelCharacter))
+	{
+		
+	}
+	else
+	{
+		PriorityEvaluation += _SentinelCharacter->GetSentinelController()->GetThreatToTarget();
+		PriorityEvaluation += ThreatSquad->GetAverageThreat();
+	}
+	
 	PriorityEvaluation += SentinelThreatToPrincipal;
 	
 	PriorityEvaluation -= MySquad->GetAverageThreat() * (NrSentinelsAttackingTarget / MySquad->GetNrSentinels());

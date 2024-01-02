@@ -135,8 +135,17 @@ ASentinelFaction* ASentinelCharacter::GetFaction() const
 
 ASentinelSquad* ASentinelCharacter::GetSquad() const
 {
-	if(!IsValidLowLevel()) return nullptr;
-	
+	if(!IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ASentinelCharacter::GetSquad] FAILED TO GET SQUAD"));
+		return nullptr;
+	}
+
+	if( !SentinelDirector)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ASentinelCharacter::GetSquad] DIRECTOR NOT LINKED TO %s"), *GetName());
+		return nullptr;
+	}
 	return SentinelDirector->GetSquad(FactionIdx, SquadIdx);
 }
 

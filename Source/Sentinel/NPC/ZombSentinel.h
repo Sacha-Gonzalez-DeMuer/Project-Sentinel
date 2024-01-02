@@ -32,7 +32,10 @@ protected:
 
 	virtual void OnDeath() override;
 	virtual void OnLastStand() override;
-	
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnSeePawn(APawn* SeenPawn) override;
+
 private:
 
 	UPROPERTY()
