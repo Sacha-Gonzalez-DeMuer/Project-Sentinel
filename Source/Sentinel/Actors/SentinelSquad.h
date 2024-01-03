@@ -10,7 +10,7 @@ class ASentinelFaction;
 class ASentinelCharacter;
 
 UCLASS()
-class SENTINEL_API ASentinelSquad : public AActor
+class SENTINEL_API ASentinelSquad : public APawn
 {
 	GENERATED_BODY()
 	
@@ -36,7 +36,6 @@ public:
 	void SetIdx(int NewFactionIdx, int NewSquadIdx);
 	void SetFaction(ASentinelFaction* NewFaction);
 	float GetAverageThreat() const;
-
 	void LeaveSquad(ASentinelCharacter* SentinelToLeave);
 
 	// retrieves how many squad members are attacking given target
@@ -44,11 +43,19 @@ public:
 	int GetNrAttackingSentinels(const ASentinelSquad* Target) const;
 	int GetNrSentinels() const;
 	TArray<ASentinelCharacter*> GetSentinels() const;
+	TArray<ASentinelCharacter*> GetSeenThreats() const;
 
+	void SetPrincipal(ASentinelCharacter* Principal);
 	void RequestMedic(ASentinelCharacter* Patient);
+	bool RequestEscort(ASentinelCharacter* ToEscort);
+
+	float CalculatePressure(ASentinelCharacter* Principal) const;
+
 	
 private:
 	TArray<ASentinelCharacter*> Sentinels;
+
+	
 
 	UPROPERTY()
 	ASentinelFaction* Faction;

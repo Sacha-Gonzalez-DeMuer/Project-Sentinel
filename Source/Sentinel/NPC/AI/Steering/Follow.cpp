@@ -32,7 +32,7 @@ FVector UFollow::CalculateSteering(const ASentinelCharacter* SteeringAgent)
 		TargetVelocity += Evade(SteeringAgent, *ToFollow);
 	}
 	
-	TargetVelocity += CalculateAvoidance(SteeringAgent);
+	//TargetVelocity += CalculateAvoidance(SteeringAgent);
 
 	return TargetVelocity;
 }

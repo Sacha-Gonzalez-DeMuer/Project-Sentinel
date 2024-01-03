@@ -9,7 +9,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "BlackboardKeys.h"
-#include "NavigationSystem.h"
 #include "Navigation/CrowdFollowingComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Sentinel/SentinelCharacter.h"
@@ -17,7 +16,6 @@
 #include "Sentinel/Components/HealthComponent.h"
 #include "Sentinel/Actors/SentinelSquad.h"
 #include "Sentinel/Actors/SentinelFaction.h"
-#include "Sentinel/NPC/SentinelDirector.h"
 #include "Steering/BlockThreat.h"
 #include "Steering/Follow.h"
 #include "Steering/SteeringBehavior.h"
@@ -38,8 +36,8 @@ ASentinelController::ASentinelController(const FObjectInitializer& ObjectInitial
 	BlockThreatSteering = CreateDefaultSubobject<UBlockThreat>(TEXT("Threat Blocking Component"));
 	BlockThreatSteering->SetBlackboard(BlackboardComponent);
 	
-	CurrentSteering = BlockThreatSteering;
 	FollowSteering = CreateDefaultSubobject<UFollow>(TEXT("Follow Component"));
+	CurrentSteering = BlockThreatSteering;
 }
 
 void ASentinelController::BeginPlay()
@@ -63,21 +61,24 @@ void ASentinelController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	
-	if(MoveUpdateTimer > 0)
-	{
-		MoveUpdateTimer -= DeltaSeconds;
-		if(MoveUpdateTimer <= 0)
-		{
-			UpdateMovement(DeltaSeconds);
-			MoveUpdateTimer = MoveUpdateInterval;
-		}
-	}
+	UpdateMovement(DeltaSeconds);
+	UpdateThreatToTargetTimer(DeltaSeconds);
 }
 
 void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
 {
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentPrincipal), NewPrincipal);
+}
+
+void ASentinelController::SetToFollow()
+{
+	CurrentSteering = FollowSteering;
+}
+
+void ASentinelController::SetToFollow(ASentinelCharacter* ToFollow)
+{
+	FollowSteering->SetToFollow(ToFollow);
+	CurrentSteering = FollowSteering;
 }
 
 void ASentinelController::SetTarget(ASentinelCharacter* NewTarget) const
@@ -124,15 +125,19 @@ void ASentinelController::OnSeePawn(APawn* SeenPawn)
 }
 
 
-float ASentinelController::GetThreatToTarget() 
+float ASentinelController::GetThreatToTarget()  const
 {
-	RecalculateThreatToTarget();
-	return ThreatToTarget;
+	if(ASentinelCharacter* Target = GetTarget())
+	{
+		return GetThreatToSentinel(Target);
+	}
+
+	return 0;
 }
 
 float ASentinelController::GetThreatToPrincipal() const
 {
-	return ThreatToPrincipal;
+	return 0;
 }
 
 FVector ASentinelController::GetThreatLocation() const
@@ -148,6 +153,7 @@ void ASentinelController::AddSeenThreat(ASentinelCharacter* NewThreat)
 {
 	SeenThreats.Add(NewThreat);
 }
+
 
 void ASentinelController::DisableBehaviorTree()
 {
@@ -180,6 +186,7 @@ bool ASentinelController::HasTarget() const
 	return BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)) != nullptr;
 }
 
+// TODO: Threat should be a location and intensity
 ASentinelCharacter* ASentinelController::GetCurrentThreat() const
 {
 	if(ASentinelCharacter* CurrentThreat = Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget))))
@@ -231,7 +238,6 @@ void ASentinelController::UpdateMovement(float DeltaTime)
 	if(!CurrentSteering) return;
 	const FVector Steering = CurrentSteering->CalculateSteering(NPCBase);
 	FVector TargetLocation = NPCBase->GetActorLocation() + Steering;
-	UE_LOG(LogTemp, Log, TEXT("Current Steering: %s"), *CurrentSteering->GetName());
 	if(FVector::DistSquared(NPCBase->GetActorLocation(), TargetLocation) > 200.0f)
 	MoveTo(TargetLocation);
 }
@@ -322,41 +328,41 @@ float ASentinelController::EvaluateThreatToPrincipal(ASentinelCharacter* Threat)
 
 	return 0;
 }
-
-float ASentinelController::EvaluateThreatToTarget()
-{
-	if (const ASentinelCharacter* Principal = GetPrincipal())
-	{
-		// Get the AI controller's path-following component
-		const UPathFollowingComponent* PathComponent = GetPathFollowingComponent();
-
-		if (PathComponent)
-		{
-			// Get the remaining path length from the movement component
-			float RemainingPathLength = PathComponent->GetRemainingPathCost();
-
-			// Normalize the distance based on some reference value (e.g., maximum possible distance)
-			const float MaxPossibleDistance = 1000.0f; // Adjust as needed
-			float NormalizedDistance = FMath::Clamp(RemainingPathLength / MaxPossibleDistance, 0.0f, 1.0f);
-
-			// Calculate health ratio (normalized between 0 and 1)
-			const float HealthRatio = NPCBase->GetHealthComponent()->GetHealth() / NPCBase->GetHealthComponent()->
-				GetMaxHealth();
-
-			// Weight for each factor (adjust based on importance)
-			constexpr float DistanceWeight = 0.5f;
-			constexpr float HealthWeight = 0.5f;
-
-			// Calculate overall threat score
-			const float ThreatScore = (NormalizedDistance * DistanceWeight) + (HealthRatio * HealthWeight);
-
-			return ThreatScore;
-		}
-	}
-
-	return 0;
-}
-
+//
+// float ASentinelController::EvaluateThreatToTarget()
+// {
+// 	if (const ASentinelCharacter* Principal = GetPrincipal())
+// 	{
+// 		// Get the AI controller's path-following component
+// 		const UPathFollowingComponent* PathComponent = GetPathFollowingComponent();
+//
+// 		if (PathComponent)
+// 		{
+// 			// Get the remaining path length from the movement component
+// 			float RemainingPathLength = PathComponent->GetRemainingPathCost();
+//
+// 			// Normalize the distance based on some reference value (e.g., maximum possible distance)
+// 			const float MaxPossibleDistance = 1000.0f; // Adjust as needed
+// 			float NormalizedDistance = FMath::Clamp(RemainingPathLength / MaxPossibleDistance, 0.0f, 1.0f);
+//
+// 			// Calculate health ratio (normalized between 0 and 1)
+// 			const float HealthRatio = NPCBase->GetHealthComponent()->GetHealth() / NPCBase->GetHealthComponent()->
+// 				GetMaxHealth();
+//
+// 			// Weight for each factor (adjust based on importance)
+// 			constexpr float DistanceWeight = 0.5f;
+// 			constexpr float HealthWeight = 0.5f;
+//
+// 			// Calculate overall threat score
+// 			const float ThreatScore = (NormalizedDistance * DistanceWeight) + (HealthRatio * HealthWeight);
+//
+// 			return ThreatScore;
+// 		}
+// 	}
+//
+// 	return 0;
+// }
+//
 
 void ASentinelController::RecalculateTargetPriority()
 {
@@ -403,17 +409,16 @@ void ASentinelController::RecalculateTargetPriority()
 
 void ASentinelController::RecalculateThreatToTarget()
 {
-	if (const UPathFollowingComponent* Pathing = GetPathFollowingComponent())
+	if(ASentinelCharacter* Target = GetTarget())
 	{
-		float BaseThreat = 2000.0f;  // Adjust this as needed
-		ThreatToTarget = BaseThreat / (Pathing->GetRemainingPathCost() + 1.0f);  // Adding 1 to avoid division by zero
+		ThreatToTarget = GetThreatToSentinel(Target);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("No Target set"));
 	}
 }
 
-void ASentinelController::RecalculateThreatToPrincipal()
-{
-	ThreatToPrincipal = 0;
-}
 
 float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelCharacter)
 {
@@ -443,7 +448,7 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 
 	
 	// Adjust PriorityEvaluation based on squared distance
-	if(ASentinelPlayerCharacter* IsPlayer = Cast<ASentinelPlayerCharacter>(_SentinelCharacter))
+	if(Cast<ASentinelPlayerCharacter>(_SentinelCharacter))
 	{
 		constexpr float PlayerThreatLevel = 9001.0f; // !!!!
 		PriorityEvaluation += PlayerThreatLevel;
@@ -463,25 +468,25 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 
 
 FVector ASentinelController::CalculateProtectivePos(const ASentinelCharacter* Protectee,
-	const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee)
+	const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee) const
 {
 	// Calculate vectors from attacker and protectee
-	FVector ProtecteeLocation = Protectee->GetActorLocation();
-	FVector AttackerLocation = Attacker->GetActorLocation();
+	const FVector ProtecteeLocation = Protectee->GetActorLocation();
+	const FVector AttackerLocation = Attacker->GetActorLocation();
 
 	// Calculate the vector from protectee to attacker
-	FVector ProtecteeToAttacker = (AttackerLocation - ProtecteeLocation).GetSafeNormal();
+	const FVector ProtecteeToAttacker = (AttackerLocation - ProtecteeLocation).GetSafeNormal();
 
 	// Calculate the protective position in between the attacker and protectee
-	FVector ProtectivePos = ProtecteeLocation + ProtecteeToAttacker * DistanceInFrontOfProtectee;
+	const FVector ProtectivePos = ProtecteeLocation + ProtecteeToAttacker * DistanceInFrontOfProtectee;
 
 	return ProtectivePos;
 }
 
-FVector ASentinelController::CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid)
+FVector ASentinelController::CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid) const
 {
 	FVector Avoidance = FVector::Zero();
-	for(ASentinelCharacter* SentinelToAvoid : SquadToAvoid->GetSentinels())
+	for(const ASentinelCharacter* SentinelToAvoid : SquadToAvoid->GetSentinels())
 	{
 		Avoidance += CalculateCharacterAvoidance(SentinelToAvoid);
 	}
@@ -489,13 +494,11 @@ FVector ASentinelController::CalculateSquadAvoidance(const ASentinelSquad* Squad
 	return Avoidance;
 }
 
-FVector ASentinelController::CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid)
+FVector ASentinelController::CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid) const
 {
 	// Implement logic to calculate a steering force to avoid a specific character
-	FVector AvoidanceForce = FVector::ZeroVector;
+	const FVector AvoidanceForce = NPCBase->GetActorLocation() - ToAvoid->GetActorLocation();
 
-	// Example: Calculate a force based on the position of the character to avoid
-	AvoidanceForce = NPCBase->GetActorLocation() - ToAvoid->GetActorLocation();
 
 	return AvoidanceForce.GetSafeNormal();
 }
@@ -530,4 +533,70 @@ UFollow* ASentinelController::GetFollowComponent() const
 UBlockThreat* ASentinelController::GetThreatBlockingComponent() const
 {
 	return BlockThreatSteering;
+}
+
+bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
+{
+	const ERoles CurrentRole = static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
+
+	if (CurrentRole == ERoles::Escort)
+	{
+		const float ProtectionToCurrentPrincipal = GetProtectionToSentinel(GetPrincipal());
+		const float ProtectionToNewPrincipal = GetProtectionToSentinel(ToEscort);
+
+		// If I can protect the new sentinel better than I can protect the current one do that
+		if(ProtectionToNewPrincipal > ProtectionToCurrentPrincipal)
+		{
+			SetPrincipal(ToEscort);
+			return true;
+		}
+		
+		return false;
+	}
+
+	// If the sentinel is not already set as an Escort, proceed with setting the role
+	SetRole(ERoles::Escort);
+	SetPrincipal(ToEscort);
+
+	return true;
+}
+
+float ASentinelController::GetProtectionToSentinel(ASentinelCharacter* Sentinel) const
+{
+	if(!Sentinel) return -1;
+	
+	float ProtectionToPrincipal = 0;
+	
+	if (const UPathFollowingComponent* Pathing = GetPathFollowingComponent())
+	{
+		if(FVector::DistSquared(Pathing->GetPathDestination(), Sentinel->GetActorLocation()) < 100.0f * 100.0f)
+		{
+			constexpr float ProtectionDistanceThreshold  = 2000.0f;  // Adjust this as needed
+			constexpr float HealthWeight = 100.f;
+
+			ProtectionToPrincipal = (Pathing->GetRemainingPathCost() + 1.0f) / ProtectionDistanceThreshold;
+			ProtectionToPrincipal += NPCBase->GetHealthComponent()->GetHealth() * HealthWeight;
+		}
+	}
+
+	return ProtectionToPrincipal;
+}
+
+float ASentinelController::GetThreatToSentinel(ASentinelCharacter* Sentinel) const
+{
+	float ThreatLvl = 0;
+	
+	if (const UPathFollowingComponent* Pathing = GetPathFollowingComponent())
+	{
+		constexpr float BaseThreat = 1000.0f;  // Adjust this as needed
+
+		ThreatLvl = BaseThreat / (Pathing->GetRemainingPathCost() + 1.0f);  // Adding 1 to avoid division by zero
+		//ThreatLvl += NPCBase->GetHealthComponent()->GetHealth() * HealthWeight;
+	}
+
+
+
+	UE_LOG(LogTemp, Log, TEXT("[GetThreatToSentinel] %s ThreatLvl: %f"), *NPCBase->GetName(), ThreatLvl);
+	
+	return ThreatLvl;
 }

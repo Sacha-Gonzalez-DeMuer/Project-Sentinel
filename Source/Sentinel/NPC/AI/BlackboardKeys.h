@@ -12,4 +12,5 @@ namespace BBKeys
 	TCHAR const* const Faction = TEXT("Faction");
 	TCHAR const* const Squad = TEXT("Squad");
 	TCHAR const* const Role = TEXT("Role");
+	TCHAR const* const PressureOnPrincipal = TEXT("PressureOnPrincipal");
 }

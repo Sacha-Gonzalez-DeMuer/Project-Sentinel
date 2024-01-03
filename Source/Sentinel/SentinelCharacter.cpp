@@ -48,9 +48,31 @@ void ASentinelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	
 	if (!SentinelDirector)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SentinelCharacter %s NOT ADDED to SentinelDirector"), *GetName());
+		// Find the SentinelDirector in the level
+		ASentinelDirector* FoundSentinelDirector = nullptr;
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASentinelDirector::StaticClass(), FoundActors);
+
+		// Loop through the found actors to check if they match your criteria (if needed)
+		for (AActor* Actor : FoundActors)
+		{
+			ASentinelDirector* Director = Cast<ASentinelDirector>(Actor);
+			if (Director)
+			{
+				// Optionally, add additional criteria here if there are multiple directors in the level
+				FoundSentinelDirector = Director;
+				break; // Break out of the loop since we found the desired director
+			}
+		}
+
+		if(FoundSentinelDirector)
+		{
+			SentinelDirector = FoundSentinelDirector;
+		} else UE_LOG(LogTemp, Warning, TEXT("SentinelCharacter %s NOT ADDED to SentinelDirector"), *GetName());
 	}
 	else
 	{

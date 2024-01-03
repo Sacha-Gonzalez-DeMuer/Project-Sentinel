@@ -18,14 +18,12 @@ ASentinelSquad::ASentinelSquad()
 void ASentinelSquad::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ASentinelSquad::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ASentinelSquad::AddSentinel(ASentinelCharacter* Sentinel)
@@ -148,13 +146,29 @@ TArray<ASentinelCharacter*> ASentinelSquad::GetSentinels() const
 	return Sentinels;
 }
 
+TArray<ASentinelCharacter*> ASentinelSquad::GetSeenThreats() const
+{
+	TArray<ASentinelCharacter*> SquadSeenThreats;
+
+	for (const ASentinelCharacter* Sentinel : GetSentinels())
+	{
+		if (const ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		{
+			TSet<ASentinelCharacter*> SeenThreats = SentinelController->GetSeenThreats();
+			SquadSeenThreats.Append(SeenThreats.Array());
+		}
+	}
+
+	return SquadSeenThreats;
+}
+
 void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 {
-	for (ASentinelCharacter* Sentinel : Sentinels)
+	for (const ASentinelCharacter* Sentinel : Sentinels)
 	{
 		if(Sentinel == Patient) continue;
 		
-		if (ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		if (const ASentinelController* SentinelController = Sentinel->GetSentinelController())
 		{
 			// Set the role and principal for the medic
 			SentinelController->SetRole(ERoles::Medic);
@@ -168,4 +182,54 @@ void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 
 	// If no medic was found, print a message
 	UE_LOG(LogTemp, Warning, TEXT("No Medic Found in the Squad"));
+}
+
+bool ASentinelSquad::RequestEscort(ASentinelCharacter* ToEscort)
+{
+	for (const ASentinelCharacter* Sentinel : Sentinels)
+	{
+		if(Sentinel == ToEscort) continue;
+		
+		if (const ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		{
+			if(SentinelController->TrySetEscort(ToEscort))
+			{
+				// Print that a medic was found and its name
+				UE_LOG(LogTemp, Warning, TEXT("Escort Found: %s"), *Sentinel->GetName());
+				return true;
+			}
+		}
+	}
+
+	// If no medic was found, print a message
+	UE_LOG(LogTemp, Warning, TEXT("No Escort Found in the Squad"));
+	return false;
+}
+
+float ASentinelSquad::CalculatePressure(ASentinelCharacter* Principal) const
+{
+	// Implement your logic to calculate the total pressure based on SquadSeenThreats
+	float TotalPressure = -1.0f;
+	for(const ASentinelCharacter* Threat : GetSeenThreats())
+	{
+		if(const ASentinelController* ThreatController = Threat->GetSentinelController())
+			if(ThreatController->GetTarget() == Principal)
+			{
+				TotalPressure += ThreatController->GetThreatToSentinel(Principal);
+			}
+	}
+
+	for(const ASentinelCharacter* Sentinel : Sentinels)
+	{
+		if(const ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		{
+			if(SentinelController->GetPrincipal() == Principal)
+			{
+				TotalPressure -= SentinelController->GetProtectionToSentinel(Principal);
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[CalculatePressure] Pressure to %s: %f"), *Principal->GetName(), TotalPressure);
+	return TotalPressure;
 }

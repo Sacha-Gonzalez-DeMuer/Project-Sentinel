@@ -48,6 +48,8 @@ public:
 	void SetTarget(ASentinelCharacter* NewTarget) const;
 	void SetDefaultTarget();
 	void SetPrincipal(ASentinelCharacter* NewPrincipal) const;
+	void SetToFollow();
+	void SetToFollow(ASentinelCharacter* ToFollow);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	TObjectPtr<UBehaviorTree> BehaviorTree;
@@ -67,11 +69,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	float MoveUpdateInterval;
 
-	float GetThreatToTarget();
+	float GetThreatToTarget() const;
 	float GetThreatToPrincipal() const;
 	FVector GetThreatLocation() const;
 	void AddSeenThreat(ASentinelCharacter* NewThreat);
 
+	float GetProtectionToSentinel(ASentinelCharacter* Sentinel) const;
+	float GetThreatToSentinel(ASentinelCharacter* Sentinel) const;
+	
 	UFUNCTION()
 	void DisableBehaviorTree();
 
@@ -91,8 +96,11 @@ public:
 	void SetRole(ERoles toRole) const;
 	UFollow* GetFollowComponent() const;
 	UBlockThreat* GetThreatBlockingComponent() const;
-protected:
 
+	bool TrySetEscort(ASentinelCharacter* ToEscort) const;
+	
+protected:
+	
 	bool HasTarget() const;
 	ASentinelCharacter* GetCurrentThreat() const;
 	
@@ -113,6 +121,7 @@ protected:
 	UPROPERTY()
 	TSet<ASentinelCharacter*> SeenThreats;
 
+	UPROPERTY()
 	USteeringBehavior* CurrentSteering;
 	
 	UPROPERTY(EditAnywhere)
@@ -122,7 +131,7 @@ protected:
 	UBlockThreat* BlockThreatSteering;
 	
 	// How much of a threat is this NPC to the NPC it's currently targeting
-	float EvaluateThreatToTarget();
+	//float EvaluateThreatToTarget();
 	void SetDefaultTarget() const;
 private:
 	bool bIsAttacking;
@@ -130,19 +139,17 @@ private:
 	float RetargetingIntervalTimer;
 	float ThreatUpdateTimer;
 	float MoveUpdateTimer;
-	
+
 	float ThreatToTarget;
-	float ThreatToPrincipal;
 	
 	void InitializeBlackboardKeys();
 	void RecalculateTargetPriority();
 	void RecalculateThreatToTarget();
-	void RecalculateThreatToPrincipal();
 	float EvaluateThreatPriority(ASentinelCharacter* _SentinelCharacter);
 	float EvaluateThreatToPrincipal(ASentinelCharacter* Threat);
 
-	FVector CalculateProtectivePos(const ASentinelCharacter* Protectee, const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee);
-	FVector CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid);
-	FVector CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid);
+	FVector CalculateProtectivePos(const ASentinelCharacter* Protectee, const ASentinelCharacter* Attacker, float DistanceInFrontOfProtectee) const;
+	FVector CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid) const;
+	FVector CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid) const;
 
 };

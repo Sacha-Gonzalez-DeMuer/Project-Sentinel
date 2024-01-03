@@ -37,10 +37,6 @@ void UBlockThreat::BeginPlay()
 FVector UBlockThreat::CalculateSteering(const ASentinelCharacter* SteeringAgent)
 {
 	UBlackboardComponent* Blackboard = SteeringAgent->GetSentinelController()->BlackboardComponent;
-	
-	if(!Blackboard)
-		UE_LOG(LogTemp, Log, TEXT("No blackboard lol?"));
-
 	ASentinelCharacter* Principal = Cast<ASentinelCharacter>(
 		Blackboard->GetValueAsObject(FName(BBKeys::CurrentPrincipal)));
 
@@ -57,9 +53,10 @@ FVector UBlockThreat::CalculateSteering(const ASentinelCharacter* SteeringAgent)
 
 	if(ThreatLocation == NPCLocation) // no threat found
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NO THREATS, FOLLOWING LEADER"));
-		
-		return SteeringAgent->GetSentinelController()->GetFollowComponent()->CalculateSteering(SteeringAgent);
+		Steering = SteeringAgent->GetSentinelController()->GetFollowComponent()->CalculateSteering(SteeringAgent);
+		DrawDebugLine(GetWorld(), NPCLocation, NPCLocation + Steering, FColor::Cyan, false, -1, 0, 2.0f);
+
+		return Steering;
 	}
 	
 	const FVector ToThreat = ThreatLocation - PrincipalLocation;
