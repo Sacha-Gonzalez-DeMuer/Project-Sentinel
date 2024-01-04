@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "SentinelSquad.generated.h"
 
+class ASentinelDirector;
+class ASquadDirectorController;
 class ASentinelFaction;
 class ASentinelCharacter;
 
@@ -28,12 +30,16 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int SquadIdx;
 
+	UPROPERTY(EditAnywhere)
+	ASentinelDirector* SentinelDirector;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void AddSentinel(ASentinelCharacter* Sentinel);
 	void SetIdx(int NewFactionIdx, int NewSquadIdx);
+	int GetSquadIdx() const;
+	int GetFactionIdx() const;
 	void SetFaction(ASentinelFaction* NewFaction);
 	float GetAverageThreat() const;
 	void LeaveSquad(ASentinelCharacter* SentinelToLeave);
@@ -51,11 +57,14 @@ public:
 
 	float CalculatePressure(ASentinelCharacter* Principal) const;
 
-	
+	ASquadDirectorController* GetSquadDirector() const;
+
 private:
+	UPROPERTY(EditAnywhere)
 	TArray<ASentinelCharacter*> Sentinels;
 
-	
+	UPROPERTY(EditAnywhere)
+	ASentinelCharacter* DefaultPrincipal;
 
 	UPROPERTY()
 	ASentinelFaction* Faction;

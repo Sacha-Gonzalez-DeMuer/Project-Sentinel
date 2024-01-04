@@ -5,10 +5,12 @@
 
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/NPC/AI/SentinelController.h"
+#include "Sentinel/NPC/AI/SquadDirectorController.h"
+#include "Sentinel/NPC/SentinelDirector.h"
 
 // Sets default values
 ASentinelSquad::ASentinelSquad()
-	: FactionIdx(0), SquadIdx(0), Faction(nullptr)
+	: FactionIdx(0), SquadIdx(0), Faction(nullptr), DefaultPrincipal(nullptr)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -18,6 +20,12 @@ ASentinelSquad::ASentinelSquad()
 void ASentinelSquad::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(DefaultPrincipal)
+		SetPrincipal(DefaultPrincipal);
+
+	if(SentinelDirector)
+		SentinelDirector->AddSquad(this);
 }
 
 // Called every frame
@@ -36,6 +44,16 @@ void ASentinelSquad::SetIdx(int NewFactionIdx, int NewSquadIdx)
 {
 	FactionIdx = NewFactionIdx;
 	SquadIdx = NewSquadIdx;
+}
+
+int ASentinelSquad::GetSquadIdx() const
+{
+	return SquadIdx;
+}
+
+int ASentinelSquad::GetFactionIdx() const
+{
+	return FactionIdx;
 }
 
 void ASentinelSquad::SetFaction(ASentinelFaction* NewFaction)
@@ -162,6 +180,14 @@ TArray<ASentinelCharacter*> ASentinelSquad::GetSeenThreats() const
 	return SquadSeenThreats;
 }
 
+void ASentinelSquad::SetPrincipal(ASentinelCharacter* Principal)
+{
+	if(ASquadDirectorController* SquadDirector = GetSquadDirector())
+	{
+		SquadDirector->SetPrincipal(Principal);
+	} else UE_LOG(LogTemp, Warning, TEXT("[ASentinelSquad::SetPrincipal] Squad has no director"));
+}
+
 void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 {
 	for (const ASentinelCharacter* Sentinel : Sentinels)
@@ -232,4 +258,18 @@ float ASentinelSquad::CalculatePressure(ASentinelCharacter* Principal) const
 
 	UE_LOG(LogTemp, Log, TEXT("[CalculatePressure] Pressure to %s: %f"), *Principal->GetName(), TotalPressure);
 	return TotalPressure;
+}
+
+ASquadDirectorController* ASentinelSquad::GetSquadDirector() const
+{
+	if(!IsValidLowLevel())
+		return nullptr;
+	
+	AController* AIController = GetController();
+	if (ASquadDirectorController* SController = Cast<ASquadDirectorController>(AIController))
+	{
+		return SController;
+	}
+	
+	return nullptr;
 }

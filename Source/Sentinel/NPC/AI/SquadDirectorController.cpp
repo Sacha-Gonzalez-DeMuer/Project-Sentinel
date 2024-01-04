@@ -34,7 +34,7 @@
  void ASquadDirectorController::Tick(float DeltaSeconds)
  {
 	Super::Tick(DeltaSeconds);
-
+	UE_LOG(LogTemp, Log, TEXT("directorcontrollertick"));
  	UpdatePrincipalPressure(DeltaSeconds);
  }
 
@@ -53,15 +53,26 @@
  {
  	if(UpdatePrincipalPressureTimer > 0.0f)
  	{
+ 		UE_LOG(LogTemp, Log, TEXT("UpdatePrincipalPressureTimer %f"), UpdatePrincipalPressureTimer);
+
  		UpdatePrincipalPressureTimer -= DeltaSeconds;
 
  		if(UpdatePrincipalPressureTimer <= 0.0f)
  			if(ASentinelCharacter* Principal = GetCurrentPrincipal())
  			{
+ 				UE_LOG(LogTemp, Log, TEXT("Updating pressure"));
+
  				BlackboardComponent->SetValueAsFloat(FName(BBKeys::PressureOnPrincipal), Squad->CalculatePressure(Principal));
  				UpdatePrincipalPressureTimer = UpdatePrincipalPressureInterval;
  			}
  	}
+ }
+
+ void ASquadDirectorController::SetPrincipal(ASentinelCharacter* NewPrincipal)
+ {
+ 	if(BlackboardComponent || !NewPrincipal)
+	    BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentPrincipal), NewPrincipal);
+ 	else UE_LOG(LogTemp, Log, TEXT("No bb?"));
  }
 
  ASentinelCharacter* ASquadDirectorController::GetCurrentPrincipal() const

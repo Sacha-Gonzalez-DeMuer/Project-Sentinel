@@ -35,6 +35,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	TObjectPtr<UBlackboardComponent> BlackboardComponent;
 
+	void SetPrincipal(ASentinelCharacter* NewPrincipal);
 private:
 	UPROPERTY()
 	ASentinelSquad* Squad;
@@ -43,7 +44,7 @@ private:
 	float UpdatePrincipalPressureInterval = 1.0f;
 
 
-	float UpdatePrincipalPressureTimer = 0.01f;
+	float UpdatePrincipalPressureTimer = 0.1f;
 
 	void InitializeBlackboardKeys();
 	void UpdatePrincipalPressure(float DeltaSeconds);

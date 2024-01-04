@@ -35,6 +35,7 @@ public:
 
 	void SetFaction(int NewFactionIdx);
 	void SetSquad(int NewSquadIdx);
+	void SetSquad(ASentinelSquad* ToSquad);
 	
 	ASentinelController* GetSentinelController() const;
 	ASentinelFaction* GetFaction() const;

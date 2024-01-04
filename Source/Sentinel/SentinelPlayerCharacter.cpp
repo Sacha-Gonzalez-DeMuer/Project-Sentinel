@@ -3,6 +3,7 @@
 
 #include "SentinelPlayerCharacter.h"
 
+#include "Actors/SentinelSquad.h"
 #include "Camera/CameraComponent.h"
 #include "Components/HealthComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -30,6 +31,8 @@ void ASentinelPlayerCharacter::BeginPlay()
 	HealthComponent = GetComponentByClass<UHealthComponent>();
 	if(!HealthComponent)
 		UE_LOG(LogTemp, Error, TEXT("HealthComponent not linked in SentinelPlayerCharacter"));
+
+	GetSquad()->SetPrincipal(this);
 }
 
 void ASentinelPlayerCharacter::OnDeath()

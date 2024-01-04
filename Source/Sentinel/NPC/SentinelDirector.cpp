@@ -2,6 +2,8 @@
 
 
 #include "Sentinel/NPC/SentinelDirector.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/Actors/SentinelFaction.h"
 #include "Sentinel/Actors/SentinelSquad.h"
@@ -20,6 +22,22 @@ ASentinelDirector::ASentinelDirector()
 void ASentinelDirector::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Find the SentinelDirector in the level
+	TArray<AActor*> FoundSquads;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASentinelDirector::StaticClass(), FoundSquads);
+
+
+	// Loop through the found actors to check if they match your criteria (if needed)
+	for (AActor* Actor : FoundSquads)
+	{
+		if (ASentinelSquad* Squad = Cast<ASentinelSquad>(Actor))
+		{
+			AddSquad(Squad);
+			break; // Break out of the loop since we found the desired director
+		}
+	}
+
 	
 }
 
@@ -46,14 +64,7 @@ void ASentinelDirector::Tick(float DeltaTime)
     // 4. Ensure Factions.Num() is non-negative before taking its maximum
     int32 NewArraySize = FMath::Max(Factions.Num(), FactionIdx + 1);
     Factions.SetNum(NewArraySize, false);
-
-    // 5. Ensure FactionIdx is within the bounds of the Factions array
-    if (FactionIdx >= Factions.Num())
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[ASentinelDirector::AddSentinel] FactionIdx (%d) out of bounds. Cannot proceed."), FactionIdx);
-        return;
-    }
-
+	
     ASentinelFaction* Faction = Factions[FactionIdx];
     if (!Faction)
     {
@@ -66,7 +77,6 @@ void ASentinelDirector::Tick(float DeltaTime)
         }
     }
 
-	
     // 7. Ensure Squad is not nullptr before calling AddSentinel
     auto Squad = Faction->GetSquad(SquadIdx);
     if (Squad)
@@ -166,6 +176,23 @@ ASentinelFaction* ASentinelDirector::GetFaction(int FactionIdx)
 		return Factions[FactionIdx];
 	}
 	return nullptr;
+}
+
+void ASentinelDirector::AddSquad(ASentinelSquad* NewSquad)
+{
+	const int FactionIdx = NewSquad->GetFactionIdx();
+	
+	if(FactionIdx < Factions.Num())
+	{
+		if(!Factions[FactionIdx]->IsValidLowLevel()) return;
+		Factions[FactionIdx]->SetSquad(NewSquad);
+	}
+	else
+	{
+		// Log information for debugging
+		ASentinelFaction* NewFaction = CreateFaction(FactionIdx);
+		NewFaction->SetSquad(NewSquad);
+	}
 }
 
 void ASentinelDirector::RequestAssistance(ASentinelSquad* Threat)

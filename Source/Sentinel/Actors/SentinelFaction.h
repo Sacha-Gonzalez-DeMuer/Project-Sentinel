@@ -23,6 +23,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ASentinelSquad> SquadType;
+
 	
 public:	
 	// Called every frame
@@ -32,9 +33,12 @@ public:
 	int GetFactionIdx() const;
 
 	ASentinelSquad* GetSquad(int SquadIdx);
+	void SetSquad(ASentinelSquad* Squad);
+	
 	TArray<ASentinelSquad*> GetSquads() const;
 private:
 	int FactionIdx;
 
+	UPROPERTY(EditAnywhere,  meta = (AllowPrivateAccess = "true"))
 	TArray<ASentinelSquad*> Squads;
 };

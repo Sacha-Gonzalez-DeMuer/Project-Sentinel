@@ -10,6 +10,7 @@
 class ASentinelSquad;
 class ASentinelCharacter;
 class ASentinelFaction;
+class ASquadDirectorController;
 
 UCLASS(Blueprintable)
 class SENTINEL_API ASentinelDirector : public ACharacter
@@ -37,14 +38,21 @@ public:
 	ASentinelSquad* GetSquad(int FactionIdx, int SquadIdx);
 	ASentinelFaction* GetFaction(int FactionIdx);
 
+	void AddSquad(ASentinelSquad* NewSquad);
+	
 	// Call an agent to target threat
 	void RequestAssistance(ASentinelSquad* Threat);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASquadDirectorController> SquadDirectorController;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int MaxFactions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int MaxSquads;
-	
+
+	UPROPERTY(EditAnywhere,  meta = (AllowPrivateAccess = "true"))
 	TArray<ASentinelFaction*> Factions;
 };

@@ -44,8 +44,11 @@ void ARecruitingArea::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 			for(ASentinelCharacter* Sentinel : Sentinels)
 			{
 				Sentinel->SetFaction(Player->GetFactionIdx());
-
-				ASentinelController* SentinelController = Sentinel->GetSentinelController();
+				Sentinel->SetSquad(Player->GetSquad());
+				
+				//Sentinel->GetSquad()->SetPrincipal(Player);
+				
+				const ASentinelController* SentinelController = Sentinel->GetSentinelController();
 				
 				SentinelController->SetPrincipal(Player);
 				SentinelController->GetFollowComponent()->SetToFollow(Player);

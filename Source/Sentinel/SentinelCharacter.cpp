@@ -48,8 +48,6 @@ void ASentinelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	
 	if (!SentinelDirector)
 	{
 		// Find the SentinelDirector in the level
@@ -76,7 +74,6 @@ void ASentinelCharacter::BeginPlay()
 	}
 	else
 	{
-		// Add the sentinel to the director's list
 		Cast<ASentinelDirector>(SentinelDirector)->AddSentinel(this);
 	}
 }
@@ -131,6 +128,13 @@ void ASentinelCharacter::SetSquad(int NewSquadIdx)
 	SquadIdx = NewSquadIdx;
 }
 
+void ASentinelCharacter::SetSquad(ASentinelSquad* ToSquad)
+{
+	GetSquad()->LeaveSquad(this);
+	ToSquad->AddSentinel(this);
+	SquadIdx = ToSquad->GetSquadIdx();
+}
+
 ASentinelController* ASentinelCharacter::GetSentinelController() const
 {
 	if(!IsValidLowLevel())
@@ -163,7 +167,7 @@ ASentinelSquad* ASentinelCharacter::GetSquad() const
 		return nullptr;
 	}
 
-	if( !SentinelDirector)
+	if(!SentinelDirector)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[ASentinelCharacter::GetSquad] DIRECTOR NOT LINKED TO %s"), *GetName());
 		return nullptr;
