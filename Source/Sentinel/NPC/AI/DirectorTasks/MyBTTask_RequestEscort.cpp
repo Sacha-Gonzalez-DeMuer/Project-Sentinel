@@ -15,6 +15,8 @@ UMyBTTask_RequestEscort::UMyBTTask_RequestEscort()
 
 EBTNodeResult::Type UMyBTTask_RequestEscort::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UE_LOG(LogTemp, Warning, TEXT(" request escort"))
+
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	ASentinelSquad* Squad = Cast<ASentinelSquad>(Blackboard->GetValueAsObject(FName(BBKeys::Squad)));
 	ASentinelCharacter* ToEscort = Cast<ASentinelCharacter>(Blackboard->GetValueAsObject(SentinelToEscortKey.SelectedKeyName));
@@ -22,6 +24,6 @@ EBTNodeResult::Type UMyBTTask_RequestEscort::ExecuteTask(UBehaviorTreeComponent&
 	{
 		return  EBTNodeResult::Succeeded;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("Failed request escort :("))
 	return  EBTNodeResult::Failed;
 }

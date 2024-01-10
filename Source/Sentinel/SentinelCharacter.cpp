@@ -48,6 +48,10 @@ void ASentinelCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// stay solo if no squad nr
+	if(SquadIdx == -1) return;
+
+	
 	if (!SentinelDirector)
 	{
 		// Find the SentinelDirector in the level
@@ -196,4 +200,19 @@ void ASentinelCharacter::OnLastStand()
 {
 	PlayAnimMontage(LastStandMontage);
 	GetSentinelController()->OnLastStand();
+}
+
+void ASentinelCharacter::AddTargetedBy(ASentinelCharacter* Attacker)
+{
+	TargetedByList.Add(Attacker);
+}
+
+void ASentinelCharacter::RemoveTargetedBy(ASentinelCharacter* Attacker)
+{
+	TargetedByList.Remove(Attacker);
+}
+
+TSet<ASentinelCharacter*> ASentinelCharacter::GetTargetedBySet() const
+{
+	return TargetedByList;
 }

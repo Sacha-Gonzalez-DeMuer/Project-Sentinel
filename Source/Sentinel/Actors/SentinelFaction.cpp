@@ -41,6 +41,8 @@ int ASentinelFaction::GetFactionIdx() const
 
 ASentinelSquad* ASentinelFaction::GetSquad(int SquadIdx)
 {
+	if(SquadIdx == -1) return nullptr;
+	
 	if(SquadIdx < Squads.Num() && IsValid(Squads[SquadIdx]) && Squads[SquadIdx] != nullptr) return Squads[SquadIdx];
 
 	// Create a new Squad

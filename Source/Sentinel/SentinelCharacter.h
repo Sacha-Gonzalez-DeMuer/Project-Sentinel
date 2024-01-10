@@ -37,9 +37,10 @@ public:
 	void SetSquad(int NewSquadIdx);
 	void SetSquad(ASentinelSquad* ToSquad);
 	
-	ASentinelController* GetSentinelController() const;
 	ASentinelFaction* GetFaction() const;
 	ASentinelSquad* GetSquad() const;
+
+	ASentinelController* GetSentinelController() const;
 	ASentinelDirector* GetDirector() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -55,6 +56,10 @@ public:
 
 	UFUNCTION()
 	virtual void OnLastStand();
+
+	void AddTargetedBy(ASentinelCharacter* Attacker);
+	void RemoveTargetedBy(ASentinelCharacter* Attacker);
+	TSet<ASentinelCharacter*> GetTargetedBySet() const;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI",  meta = (AllowPrivateAccess = "true"),
 	meta = (ToolTip = "The team this agent will be part of. A faction consists of one or multiple allied squads."))
@@ -75,8 +80,9 @@ protected:
 	UAnimMontage *RevivingMontage;
 	
 private:
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ASentinelDirector* SentinelDirector;
+
+	TSet<ASentinelCharacter*> TargetedByList;
 };
 

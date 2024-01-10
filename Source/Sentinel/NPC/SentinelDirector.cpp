@@ -46,7 +46,10 @@ void ASentinelDirector::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
+}
+
+
+void ASentinelDirector::AddSentinel(ASentinelCharacter* Sentinel)
 {
     UE_LOG(LogTemp, Log, TEXT("[ASentinelDirector::AddSentinel] SQUAD"));
 

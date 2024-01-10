@@ -4,11 +4,13 @@
 #include "Sentinel/NPC/AI/SquadDirectorController.h"
 
 #include "BlackboardKeys.h"
+#include "SentinelController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/Actors/SentinelSquad.h"
+#include "Sentinel/Components/HealthComponent.h"
 
  ASquadDirectorController::ASquadDirectorController(FObjectInitializer const& ObjectInitializer)
  {
@@ -38,7 +40,7 @@
  	UpdatePrincipalPressure(DeltaSeconds);
  }
 
- void ASquadDirectorController::InitializeBlackboardKeys()
+ void ASquadDirectorController::InitializeBlackboardKeys() const 
  {
  	if(BlackboardComponent)
  	{
@@ -53,26 +55,55 @@
  {
  	if(UpdatePrincipalPressureTimer > 0.0f)
  	{
- 		UE_LOG(LogTemp, Log, TEXT("UpdatePrincipalPressureTimer %f"), UpdatePrincipalPressureTimer);
-
  		UpdatePrincipalPressureTimer -= DeltaSeconds;
 
  		if(UpdatePrincipalPressureTimer <= 0.0f)
+ 		{
  			if(ASentinelCharacter* Principal = GetCurrentPrincipal())
  			{
- 				UE_LOG(LogTemp, Log, TEXT("Updating pressure"));
-
  				BlackboardComponent->SetValueAsFloat(FName(BBKeys::PressureOnPrincipal), Squad->CalculatePressure(Principal));
  				UpdatePrincipalPressureTimer = UpdatePrincipalPressureInterval;
  			}
+
+ 			UpdateWeakestAgent();
+ 		}
  	}
+ }
+
+ void ASquadDirectorController::UpdateWeakestAgent()
+ {
+ 	ASentinelCharacter* Weakest = Squad->GetSentinels().Top();
+ 	if(!Weakest) return;
+ 	
+ 	for(ASentinelCharacter* Sentinel : Squad->GetSentinels())
+ 	{
+ 		if(Weakest->GetHealthComponent()->GetHealthInPercent() > Sentinel->GetHealthComponent()->GetHealthInPercent())
+ 		{
+ 			Weakest = Sentinel;
+ 		}
+ 	}
+
+ 	if(Weakest->GetHealthComponent()->GetHealthInPercent() < .7f)
+ 	{
+		for(ASentinelCharacter* Sentinel : Squad->GetSentinels())
+		{
+			if(Sentinel == Weakest) continue;
+
+			//if(Sentinel->GetSentinelController()->GetPrincipal() == Weakest) // being protected, not weak.
+			//{
+			//	BlackboardComponent->SetValueAsObject(FName(BBKeys::WeakestSentinel), nullptr); 
+			//}
+		}
+ 		BlackboardComponent->SetValueAsObject(FName(BBKeys::WeakestSentinel), Weakest);
+ 	} else  BlackboardComponent->SetValueAsObject(FName(BBKeys::WeakestSentinel), nullptr); // not even weak
+
  }
 
  void ASquadDirectorController::SetPrincipal(ASentinelCharacter* NewPrincipal)
  {
  	if(BlackboardComponent || !NewPrincipal)
 	    BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentPrincipal), NewPrincipal);
- 	else UE_LOG(LogTemp, Log, TEXT("No bb?"));
+ 	else UE_LOG(LogTemp, Log, TEXT("[ASquadDirectorController::SetPrincipal] No bb?"));
  }
 
  ASentinelCharacter* ASquadDirectorController::GetCurrentPrincipal() const

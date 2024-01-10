@@ -16,17 +16,17 @@ bool UBTDecorator_IsObjectInRange::CalculateRawConditionValue(UBehaviorTreeCompo
 {
 	if(!IsValid(OwnerComp.GetOwner())) return false;
 	
-	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	const UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	if (Blackboard == nullptr)
 	{
 		return false;
 	}
 
 	// Get the target pawn from the blackboard
-	auto bbTarget = Blackboard->GetValueAsObject(TargetKey.SelectedKeyName);
+	const auto bbTarget = Blackboard->GetValueAsObject(TargetKey.SelectedKeyName);
 	if (!bbTarget) return false;
 
-	AActor* Target = Cast<AActor>(bbTarget);
+	const AActor* Target = Cast<AActor>(bbTarget);
 	if (Target == nullptr || !Target->IsValidLowLevel())
 	{
 		return false;

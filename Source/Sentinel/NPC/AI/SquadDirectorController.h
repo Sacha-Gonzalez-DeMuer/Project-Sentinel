@@ -36,18 +36,19 @@ public:
 	TObjectPtr<UBlackboardComponent> BlackboardComponent;
 
 	void SetPrincipal(ASentinelCharacter* NewPrincipal);
+	ASentinelCharacter* GetCurrentPrincipal() const;
 private:
 	UPROPERTY()
 	ASentinelSquad* Squad;
 	
 	UPROPERTY(EditAnywhere)
 	float UpdatePrincipalPressureInterval = 1.0f;
-
-
 	float UpdatePrincipalPressureTimer = 0.1f;
 
-	void InitializeBlackboardKeys();
+	void InitializeBlackboardKeys() const;
 	void UpdatePrincipalPressure(float DeltaSeconds);
+	void UpdateWeakestAgent();
 
-	ASentinelCharacter* GetCurrentPrincipal() const;
+
+	TArray<ASentinelCharacter*> WeakAgents; // weak agents could are low in hp
 };

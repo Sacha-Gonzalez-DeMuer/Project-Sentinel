@@ -22,7 +22,7 @@ protected:
 	FBlackboardKeySelector TargetKey;
 
 	UPROPERTY(EditAnywhere, Category = "Range")
-	float Range;
+	float Range = 0;
 
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };

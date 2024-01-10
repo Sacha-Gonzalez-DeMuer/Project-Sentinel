@@ -70,6 +70,11 @@ void ASentinelController::SetPrincipal(ASentinelCharacter* NewPrincipal) const
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentPrincipal), NewPrincipal);
 }
 
+void ASentinelController::SetTargetToKill(ASentinelCharacter* Target) const
+{
+	BlackboardComponent->SetValueAsObject(FName(BBKeys::TargetToKill), Target);
+}
+
 void ASentinelController::SetToFollow()
 {
 	CurrentSteering = FollowSteering;
@@ -83,7 +88,14 @@ void ASentinelController::SetToFollow(ASentinelCharacter* ToFollow)
 
 void ASentinelController::SetTarget(ASentinelCharacter* NewTarget) const
 {
+	if(auto CurrentTarget = GetCurrentTarget())
+	{
+		if(CurrentTarget == NewTarget) return;
+		CurrentTarget->RemoveTargetedBy(NPCBase);
+	}
+
 	BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), NewTarget);
+	NewTarget->AddTargetedBy(NPCBase);
 }
 
 void ASentinelController::SetDefaultTarget()
@@ -94,7 +106,6 @@ void ASentinelController::SetDefaultTarget()
 			BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), PlayerPawn);
 		}
 	else BlackboardComponent->SetValueAsObject(FName(BBKeys::CurrentTarget), nullptr);
-
 }
 
 
@@ -188,6 +199,14 @@ bool ASentinelController::HasTarget() const
 
 // TODO: Threat should be a location and intensity
 ASentinelCharacter* ASentinelController::GetCurrentThreat() const
+{
+	if(ASentinelCharacter* CurrentThreat = Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget))))
+		return CurrentThreat;
+
+	return nullptr;
+}
+
+ASentinelCharacter* ASentinelController::GetCurrentTarget() const
 {
 	if(ASentinelCharacter* CurrentThreat = Cast<ASentinelCharacter>(BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget))))
 		return CurrentThreat;
@@ -503,6 +522,19 @@ FVector ASentinelController::CalculateCharacterAvoidance(const ASentinelCharacte
 	return AvoidanceForce.GetSafeNormal();
 }
 
+void ASentinelController::SetBlockThreatSteering()
+{
+	CurrentSteering = BlockThreatSteering;
+}
+
+void ASentinelController::SetFollow(ASentinelCharacter* toFollow)
+{
+	if(toFollow)
+		FollowSteering->SetToFollow(toFollow);
+
+	CurrentSteering = FollowSteering;
+}
+
 ASentinelCharacter* ASentinelController::GetPrincipal() const
 {
 	return Cast<ASentinelCharacter>(
@@ -515,14 +547,43 @@ ASentinelCharacter* ASentinelController::GetTarget() const
 		BlackboardComponent->GetValueAsObject(FName(BBKeys::CurrentTarget)));
 }
 
+ASentinelCharacter* ASentinelController::GetTargetToKill() const
+{
+	return Cast<ASentinelCharacter>(
+	BlackboardComponent->GetValueAsObject(FName(BBKeys::TargetToKill)));
+}
+
 TSet<ASentinelCharacter*> ASentinelController::GetSeenThreats() const
 {
 	return SeenThreats;
 }
 
+ASentinelCharacter* ASentinelController::GetHighestThreat() 
+{
+	if(SeenThreats.IsEmpty()) return nullptr;
+	
+	ASentinelCharacter* HighestThreat = *SeenThreats.begin();
+
+	for(ASentinelCharacter* Threat : SeenThreats)
+	{
+		if(ASentinelController* SController = Threat->GetSentinelController())
+		if(ASentinelCharacter* Sentinel = SController->GetHighestThreat())
+		{
+			return Sentinel;
+		}
+	}
+
+	return nullptr;
+}
+
 void ASentinelController::SetRole(ERoles toRole) const
 {
 	BlackboardComponent->SetValueAsEnum(FName(BBKeys::Role), static_cast<uint8>(toRole));
+}
+
+ERoles ASentinelController::GetRole() const
+{
+	return static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
 }
 
 UFollow* ASentinelController::GetFollowComponent() const
@@ -539,6 +600,14 @@ bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
 {
 	const ERoles CurrentRole = static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
 
+	if(ToEscort == GetPrincipal()) return false; // Is already escorting, doesn't count as setting.
+	
+	// Lambda function for setting the escort role
+	auto SetEscortRole = [this, ToEscort]() {
+		SetRole(ERoles::Escort);
+		SetPrincipal(ToEscort);
+	};
+	
 	if (CurrentRole == ERoles::Escort)
 	{
 		const float ProtectionToCurrentPrincipal = GetProtectionToSentinel(GetPrincipal());
@@ -547,7 +616,7 @@ bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
 		// If I can protect the new sentinel better than I can protect the current one do that
 		if(ProtectionToNewPrincipal > ProtectionToCurrentPrincipal)
 		{
-			SetPrincipal(ToEscort);
+			SetEscortRole();
 			return true;
 		}
 		
@@ -555,8 +624,19 @@ bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
 	}
 
 	// If the sentinel is not already set as an Escort, proceed with setting the role
-	SetRole(ERoles::Escort);
-	SetPrincipal(ToEscort);
+	SetEscortRole();
+
+	return true;
+}
+
+bool ASentinelController::TrySetKiller(ASentinelCharacter* Target) const
+{
+	const ERoles CurrentRole = static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
+	
+	if(Target == GetTarget()) return false; // Is already escorting, doesn't count as setting.
+
+	SetRole(ERoles::Killer);
+	SetTargetToKill(Target);
 
 	return true;
 }

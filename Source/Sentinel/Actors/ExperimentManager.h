@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ExperimentManager.generated.h"
 
+class ASentinelCharacter;
 class ASentinelDirector;
 class ASentinelPlayerCharacter;
 
@@ -23,11 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (VisibleAnywhere = true))
-	TSubclassOf<ASentinelPlayerCharacter> Player;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (VisibleAnywhere = true))
 	TSubclassOf<ASentinelDirector> Director;
-	
 
 	UFUNCTION(BlueprintCallable)
 	void OnFinishEnter();
@@ -36,4 +33,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	UPROPERTY(EditAnywhere, meta = (VisibleAnywhere = true))
+	ASentinelPlayerCharacter* Player;
+
+	UFUNCTION()
+	void OnPlayerTakeDamage(int Amount);
+
+	void SaveData();
+	void ResetWorld() const;
+	
+	int GetNrGuardiansInWorld() const;
+	
+	float TotalPlayerDamage;
+	float CompletionTime;
+	int SurvivingGuardians;
+	int RevivedGuardians;
 };

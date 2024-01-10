@@ -7,6 +7,12 @@
 #include "HealthComponent.generated.h"
 class ASentinelCharacter;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthEventDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthEventOPDelegate, int32, ParamName);
+
+
+
+
+
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -28,7 +34,7 @@ public:
 	FHealthEventDelegate OnRevive;
 
 	UPROPERTY(BlueprintCallable, Category= "1. Events")
-	FHealthEventDelegate OnTakeDamage;
+	FHealthEventOPDelegate OnTakeDamage;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void TakeDamage(const int Amount, ASentinelCharacter* Instigator);
@@ -56,6 +62,8 @@ public:
 	void SetParentCharacter(ASentinelCharacter* Parent);
 	void SetCanBeRevived(bool _CanBeRevived);
 	bool IsOnLastStand() const;
+	bool IsDead() const;
+	
 	virtual void Revive();
 protected:
 	// Called when the game starts

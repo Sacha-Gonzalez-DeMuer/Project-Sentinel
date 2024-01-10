@@ -48,6 +48,7 @@ public:
 	void SetTarget(ASentinelCharacter* NewTarget) const;
 	void SetDefaultTarget();
 	void SetPrincipal(ASentinelCharacter* NewPrincipal) const;
+	void SetTargetToKill(ASentinelCharacter* Target) const;
 	void SetToFollow();
 	void SetToFollow(ASentinelCharacter* ToFollow);
 
@@ -91,18 +92,26 @@ public:
 	
 	ASentinelCharacter* GetPrincipal() const;
 	ASentinelCharacter* GetTarget() const;
+	ASentinelCharacter* GetTargetToKill() const;
+	
 	TSet<ASentinelCharacter*> GetSeenThreats() const;
+	ASentinelCharacter* GetHighestThreat();
+	
 
 	void SetRole(ERoles toRole) const;
+	ERoles GetRole() const;
+	
 	UFollow* GetFollowComponent() const;
 	UBlockThreat* GetThreatBlockingComponent() const;
 
 	bool TrySetEscort(ASentinelCharacter* ToEscort) const;
+	bool TrySetKiller(ASentinelCharacter* Target) const;
 	
 protected:
-	
 	bool HasTarget() const;
 	ASentinelCharacter* GetCurrentThreat() const;
+	ASentinelCharacter* GetCurrentTarget() const;
+
 	
 	void AddThreat(ASentinelCharacter* NewThreat);
 	void SetAttacking(bool Attacking);
@@ -152,4 +161,6 @@ private:
 	FVector CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid) const;
 	FVector CalculateCharacterAvoidance(const ASentinelCharacter* ToAvoid) const;
 
+	void SetBlockThreatSteering();
+	void SetFollow(ASentinelCharacter* toFollow = nullptr);
 };

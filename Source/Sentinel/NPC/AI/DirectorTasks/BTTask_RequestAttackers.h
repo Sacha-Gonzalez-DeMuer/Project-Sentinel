@@ -17,5 +17,8 @@ class SENTINEL_API UBTTask_RequestAttackers : public UBTTask_BlackboardBase
 
 public:
 	UBTTask_RequestAttackers();
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+	FBlackboardKeySelector SentinelToAttackKey;
 };

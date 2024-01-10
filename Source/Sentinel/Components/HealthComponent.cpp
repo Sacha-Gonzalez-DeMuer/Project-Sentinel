@@ -24,7 +24,7 @@ void UHealthComponent::TakeDamage(const int Amount, ASentinelCharacter* Instigat
 		return;
 	
 	CurrentHealth -= Amount;
-	//OnTakeDamage.Broadcast();
+	OnTakeDamage.Broadcast(Amount);
 	
 	if(ASentinelController* SentinelController = Character->GetSentinelController())
 		if (!Instigator->IsAlly(Character))
@@ -91,6 +91,11 @@ void UHealthComponent::SetCanBeRevived(bool _CanBeRevived)
 bool UHealthComponent::IsOnLastStand() const
 {
 	return _IsOnLastStand;
+}
+
+bool UHealthComponent::IsDead() const
+{
+	return CurrentHealth > 0;
 }
 
 

@@ -10,7 +10,7 @@
 
 // Sets default values
 ASentinelSquad::ASentinelSquad()
-	: FactionIdx(0), SquadIdx(0), Faction(nullptr), DefaultPrincipal(nullptr)
+	: FactionIdx(0), SquadIdx(0), DefaultPrincipal(nullptr), Faction(nullptr)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -188,8 +188,10 @@ void ASentinelSquad::SetPrincipal(ASentinelCharacter* Principal)
 	} else UE_LOG(LogTemp, Warning, TEXT("[ASentinelSquad::SetPrincipal] Squad has no director"));
 }
 
-void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
+bool ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Searching medic"));
+	
 	for (const ASentinelCharacter* Sentinel : Sentinels)
 	{
 		if(Sentinel == Patient) continue;
@@ -202,12 +204,15 @@ void ASentinelSquad::RequestMedic(ASentinelCharacter* Patient)
 
 			// Print that a medic was found and its name
 			UE_LOG(LogTemp, Warning, TEXT("Medic Found: %s"), *Sentinel->GetName());
-			return;
+			return true;
 		}
 	}
 
 	// If no medic was found, print a message
 	UE_LOG(LogTemp, Warning, TEXT("No Medic Found in the Squad"));
+
+	return false;
+	
 }
 
 bool ASentinelSquad::RequestEscort(ASentinelCharacter* ToEscort)
@@ -229,6 +234,32 @@ bool ASentinelSquad::RequestEscort(ASentinelCharacter* ToEscort)
 
 	// If no medic was found, print a message
 	UE_LOG(LogTemp, Warning, TEXT("No Escort Found in the Squad"));
+	return false;
+}
+
+
+bool ASentinelSquad::RequestKiller(ASentinelCharacter* ToKill, int NrKillers)
+{
+	int nrKillersFound = 0;
+	for (const ASentinelCharacter* Sentinel : Sentinels)
+	{
+		if(Sentinel == ToKill) continue;
+		
+		if (const ASentinelController* SentinelController = Sentinel->GetSentinelController())
+		{
+			if(SentinelController->TrySetKiller(ToKill))
+			{
+				// Print that a medic was found and its name
+				UE_LOG(LogTemp, Warning, TEXT("Killer Found: %s"), *Sentinel->GetName());
+
+				++nrKillersFound;
+				if(nrKillersFound >= NrKillers) return true;
+			}
+		}
+	}
+
+	
+	UE_LOG(LogTemp, Warning, TEXT("No Killer Found in the Squad"));
 	return false;
 }
 

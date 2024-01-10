@@ -51,9 +51,12 @@ public:
 	TArray<ASentinelCharacter*> GetSentinels() const;
 	TArray<ASentinelCharacter*> GetSeenThreats() const;
 
+	ASentinelCharacter* GetPrincipal() const;
 	void SetPrincipal(ASentinelCharacter* Principal);
-	void RequestMedic(ASentinelCharacter* Patient);
+	bool RequestMedic(ASentinelCharacter* Patient);
 	bool RequestEscort(ASentinelCharacter* ToEscort);
+
+	bool RequestKiller(ASentinelCharacter* ToKill, int NrKillers = 1);
 
 	float CalculatePressure(ASentinelCharacter* Principal) const;
 
