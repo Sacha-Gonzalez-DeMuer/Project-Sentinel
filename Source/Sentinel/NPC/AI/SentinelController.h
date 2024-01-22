@@ -52,6 +52,11 @@ public:
 	void SetToFollow();
 	void SetToFollow(ASentinelCharacter* ToFollow);
 
+	
+
+	UPROPERTY(EditAnywhere)
+	bool SquadsEnabled = true;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAcces = "true"))
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
@@ -96,7 +101,7 @@ public:
 	
 	TSet<ASentinelCharacter*> GetSeenThreats() const;
 	ASentinelCharacter* GetHighestThreat();
-	
+	FVector GetExploreLocation() const;
 
 	void SetRole(ERoles toRole) const;
 	ERoles GetRole() const;
@@ -106,7 +111,8 @@ public:
 
 	bool TrySetEscort(ASentinelCharacter* ToEscort) const;
 	bool TrySetKiller(ASentinelCharacter* Target) const;
-	
+	bool TrySetExplorer(const FVector& TargetLocation) const;
+	bool IsBlocking() const;
 protected:
 	bool HasTarget() const;
 	ASentinelCharacter* GetCurrentThreat() const;
@@ -148,7 +154,6 @@ private:
 	float RetargetingIntervalTimer;
 	float ThreatUpdateTimer;
 	float MoveUpdateTimer;
-
 	float ThreatToTarget;
 	
 	void InitializeBlackboardKeys();

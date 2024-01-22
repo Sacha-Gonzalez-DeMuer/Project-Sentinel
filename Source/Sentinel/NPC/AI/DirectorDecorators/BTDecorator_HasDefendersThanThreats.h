@@ -23,7 +23,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	bool CheckForLess; // if set the comparison will check for less defenders than threats, otherwise more
-
-
+	
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };

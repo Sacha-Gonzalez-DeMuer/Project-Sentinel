@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SentinelCharacter.generated.h"
 
+class ARecruitingArea;
 class ASentinelFaction;
 class ASentinelSquad;
 class ASentinelDirector;
@@ -60,6 +61,10 @@ public:
 	void AddTargetedBy(ASentinelCharacter* Attacker);
 	void RemoveTargetedBy(ASentinelCharacter* Attacker);
 	TSet<ASentinelCharacter*> GetTargetedBySet() const;
+
+	void SetRecruitArea(ARecruitingArea* area);
+	ARecruitingArea* GetRecruitingArea() const;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI",  meta = (AllowPrivateAccess = "true"),
 	meta = (ToolTip = "The team this agent will be part of. A faction consists of one or multiple allied squads."))
@@ -84,5 +89,8 @@ private:
 	ASentinelDirector* SentinelDirector;
 
 	TSet<ASentinelCharacter*> TargetedByList;
+
+	UPROPERTY()
+	ARecruitingArea* RecruitingArea;
 };
 

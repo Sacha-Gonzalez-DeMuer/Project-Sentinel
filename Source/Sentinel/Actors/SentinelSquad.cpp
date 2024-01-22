@@ -3,6 +3,7 @@
 
 #include "SentinelSquad.h"
 
+#include "RecruitingArea.h"
 #include "Sentinel/SentinelCharacter.h"
 #include "Sentinel/NPC/AI/SentinelController.h"
 #include "Sentinel/NPC/AI/SquadDirectorController.h"
@@ -93,14 +94,13 @@ int ASentinelSquad::GetNrAttackingSentinels(const ASentinelCharacter* Target) co
 	// Check if the Target pointer is valid
 	if (Target)
 	{
-		for (ASentinelCharacter* SquadSentinel : Sentinels)
+		for (const ASentinelCharacter* SquadSentinel : Sentinels)
 		{
 			// Check if SquadSentinel pointer is valid
 			if (SquadSentinel)
 			{
 				// Check if the SentinelController pointer is valid
-				ASentinelController* SentinelController = SquadSentinel->GetSentinelController();
-				if (SentinelController)
+				if (const ASentinelController* SentinelController = SquadSentinel->GetSentinelController())
 				{
 					// Check if the target of the SentinelController matches the provided Target
 					if (SentinelController->GetTarget() == Target)
@@ -178,6 +178,15 @@ TArray<ASentinelCharacter*> ASentinelSquad::GetSeenThreats() const
 	}
 
 	return SquadSeenThreats;
+}
+
+ASentinelCharacter* ASentinelSquad::GetPrincipal() const
+{
+	if(ASquadDirectorController* Director = GetSquadDirector())
+	{
+		return Director->GetCurrentPrincipal();
+	}
+	return nullptr;
 }
 
 void ASentinelSquad::SetPrincipal(ASentinelCharacter* Principal)
@@ -303,4 +312,22 @@ ASquadDirectorController* ASentinelSquad::GetSquadDirector() const
 	}
 	
 	return nullptr;
+}
+
+void ASentinelSquad::AddSeenRecruitArea(ARecruitingArea* SeenArea)
+{
+	SeenRecruitAreas.Add(SeenArea);
+}
+
+TSet<ARecruitingArea*> ASentinelSquad::GetSeenRecruitAreas() 
+{
+	for (auto It = SeenRecruitAreas.CreateIterator(); It; ++It)
+	{
+		if (*It == nullptr || !(*It)->IsValidLowLevel())
+		{
+			It.RemoveCurrent();
+		}
+	}
+	
+	return SeenRecruitAreas;
 }

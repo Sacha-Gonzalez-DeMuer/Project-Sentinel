@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RecruitingArea.generated.h"
 
+class ASentinelPlayerCharacter;
 class UBoxComponent;
 class ASentinelCharacter;
 
@@ -21,6 +22,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool TriggerBySentinelOnly;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trigger")
 	UBoxComponent* TriggerArea;
@@ -30,6 +34,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TArray<AActor*> ToRemove;
+
+	UPROPERTY(EditAnywhere)
+	float TimeToRecruit = 10.0f;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -38,5 +46,22 @@ public:
 private:
 	UFUNCTION(BlueprintCallable)
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapEnd(AActor* OtherActor);
+
+	void OverlapTick(AActor* OtherActor, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable)
+	float GetRecruitProgress() const;
 	
+	UPROPERTY()
+	ASentinelPlayerCharacter* Player;
+
+	bool BeingRecruited = false;
+	float RecruitTimer = 0.0f;
+
+	void Recruit();
+
+	TArray<ASentinelCharacter*> RecruitingSentinels;
 };

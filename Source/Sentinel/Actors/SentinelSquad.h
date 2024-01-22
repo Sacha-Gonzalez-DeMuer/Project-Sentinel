@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SentinelSquad.generated.h"
 
+class ARecruitingArea;
 class ASentinelDirector;
 class ASquadDirectorController;
 class ASentinelFaction;
@@ -62,9 +63,13 @@ public:
 
 	ASquadDirectorController* GetSquadDirector() const;
 
+	void AddSeenRecruitArea(ARecruitingArea* SeenArea); 
+	TSet<ARecruitingArea*> GetSeenRecruitAreas() ;
 private:
 	UPROPERTY(EditAnywhere)
 	TArray<ASentinelCharacter*> Sentinels;
+
+	TSet<ARecruitingArea*> SeenRecruitAreas;
 
 	UPROPERTY(EditAnywhere)
 	ASentinelCharacter* DefaultPrincipal;

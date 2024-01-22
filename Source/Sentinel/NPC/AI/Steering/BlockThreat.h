@@ -8,6 +8,7 @@
 #include "BlockThreat.generated.h"
 
 
+class ASentinelSquad;
 class UBlackboardComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -48,11 +49,13 @@ public:
 	float AllyAvoidanceWeight = .5f;
 
 	FVector CalculateAvoidance(const ASentinelCharacter* SteeringAgent);
-
-	//UPROPERTY()
-	//UBlackboardComponent* BlackboardComponent;
+	bool IsBlocking(const ASentinelCharacter* SteeringAgent,  const ASentinelCharacter* Principal) const;
 
 
 private:
 	FVector Arrive(const ASentinelCharacter* SteeringAgent, const FVector& Target, float ArrivalRadius) const;
+
+	bool BlockOccupied(const ASentinelCharacter* SteeringAgent, const ASentinelSquad* SentinelSquad) const;
+
+	bool isBlocking;
 };

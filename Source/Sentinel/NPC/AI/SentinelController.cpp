@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "BlackboardKeys.h"
+#include "NavigationSystem.h"
 #include "Navigation/CrowdFollowingComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Sentinel/SentinelCharacter.h"
@@ -324,7 +325,10 @@ void ASentinelController::SetDefaultTarget() const
 
 float ASentinelController::EvaluateThreatToPrincipal(ASentinelCharacter* Threat)
 {
-	if (const ASentinelCharacter* Principal = GetPrincipal())
+	const ASentinelCharacter* Principal = GetPrincipal();
+
+	
+	if (Principal)
 	{
 		// Calculate distance between agent and threat
 		const float Distance = FVector::Dist(Threat->GetActorLocation(), Principal->GetActorLocation());
@@ -441,25 +445,18 @@ void ASentinelController::RecalculateThreatToTarget()
 
 float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelCharacter)
 {
-	/*
-		*For now they calculate priority by taking the highest threat.
-		Influence it with squad threat level?
-		Influence it with how many squadmates are targeting the same threat / squad
-		Should priority calculation be the directors job?
-		No, Sentinels ultimately make the decisions based on their state. Director will change their state depending on current game state.
-	*/
+	
 	if(_SentinelCharacter->GetHealthComponent()->IsOnLastStand()) return TNumericLimits<float>::Min();
 	
 	float PriorityEvaluation = 0;
 	
 	const ASentinelSquad* ThreatSquad = _SentinelCharacter->GetSquad();
 	const ASentinelSquad* MySquad = NPCBase->GetSquad();
-	//const int NrSentinelsAttackingSquad = MySquad->GetNrAttackingSentinels(ThreatSquad); // how many squad members attacking targets squad? // ******** CRASHES IDK Y
-	const int NrSentinelsAttackingTarget = MySquad->GetNrAttackingSentinels(_SentinelCharacter); // how many squad members attacking target sentinel
+	 int NrSentinelsAttackingTarget = 1; // how many squad members attacking target sentinel
+	if(MySquad && SquadsEnabled) NrSentinelsAttackingTarget =  MySquad->GetNrAttackingSentinels(_SentinelCharacter);
 	const int SentinelThreatToPrincipal = EvaluateThreatToPrincipal(_SentinelCharacter);
-	//const int ThreatSquadSize = ThreatSquad->GetNrSentinels();
 
-
+	
 	const float DistanceToTarget = FVector::Dist(_SentinelCharacter->GetActorLocation(), _SentinelCharacter->GetActorLocation());
 	const float MaxDistance = 1000.0f; 
 	const float DistanceWeight = FMath::Lerp(10000.0f, 0.0f, FMath::Clamp(DistanceToTarget / MaxDistance, 0.0f, 10000.0f));
@@ -475,12 +472,19 @@ float ASentinelController::EvaluateThreatPriority(ASentinelCharacter* _SentinelC
 	else
 	{
 		PriorityEvaluation += _SentinelCharacter->GetSentinelController()->GetThreatToTarget();
-		PriorityEvaluation += ThreatSquad->GetAverageThreat();
+		if(ThreatSquad && SquadsEnabled) PriorityEvaluation += ThreatSquad->GetAverageThreat();
 	}
 	
 	PriorityEvaluation += SentinelThreatToPrincipal;
+
+	if(MySquad && SquadsEnabled)
+		PriorityEvaluation -= MySquad->GetAverageThreat() * (NrSentinelsAttackingTarget / MySquad->GetNrSentinels());
 	
-	PriorityEvaluation -= MySquad->GetAverageThreat() * (NrSentinelsAttackingTarget / MySquad->GetNrSentinels());
+	if(SquadsEnabled && MySquad)
+		if(const ASentinelCharacter* SquadPrincipal = MySquad->GetPrincipal())
+	{
+		PriorityEvaluation += 1.0f / (FVector::Dist(SquadPrincipal->GetActorLocation(), _SentinelCharacter->GetActorLocation()) + 1.0f);
+	}
 	
 	return PriorityEvaluation;
 }
@@ -504,6 +508,8 @@ FVector ASentinelController::CalculateProtectivePos(const ASentinelCharacter* Pr
 
 FVector ASentinelController::CalculateSquadAvoidance(const ASentinelSquad* SquadToAvoid) const
 {
+	if(!SquadsEnabled) return FVector::Zero();
+	
 	FVector Avoidance = FVector::Zero();
 	for(const ASentinelCharacter* SentinelToAvoid : SquadToAvoid->GetSentinels())
 	{
@@ -576,6 +582,11 @@ ASentinelCharacter* ASentinelController::GetHighestThreat()
 	return nullptr;
 }
 
+FVector ASentinelController::GetExploreLocation() const
+{
+	return BlackboardComponent->GetValueAsVector(FName(BBKeys::TargetPosition));
+}
+
 void ASentinelController::SetRole(ERoles toRole) const
 {
 	BlackboardComponent->SetValueAsEnum(FName(BBKeys::Role), static_cast<uint8>(toRole));
@@ -598,6 +609,8 @@ UBlockThreat* ASentinelController::GetThreatBlockingComponent() const
 
 bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
 {
+	if(!SquadsEnabled) return false;
+
 	const ERoles CurrentRole = static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
 
 	if(ToEscort == GetPrincipal()) return false; // Is already escorting, doesn't count as setting.
@@ -631,6 +644,8 @@ bool ASentinelController::TrySetEscort(ASentinelCharacter* ToEscort) const
 
 bool ASentinelController::TrySetKiller(ASentinelCharacter* Target) const
 {
+	if(!SquadsEnabled) return false;
+
 	const ERoles CurrentRole = static_cast<ERoles>(BlackboardComponent->GetValueAsEnum(FName(BBKeys::Role)));
 	
 	if(Target == GetTarget()) return false; // Is already escorting, doesn't count as setting.
@@ -639,6 +654,29 @@ bool ASentinelController::TrySetKiller(ASentinelCharacter* Target) const
 	SetTargetToKill(Target);
 
 	return true;
+}
+
+bool ASentinelController::TrySetExplorer(const FVector& TargetLocation) const
+{
+	if(!SquadsEnabled) return false;
+
+	// already at that location
+	if(FVector::Dist(NPCBase->GetActorLocation(), TargetLocation) < 100.0f) return false;
+	
+	if (UNavigationPath* NavPath =
+		UNavigationSystemV1::FindPathToLocationSynchronously(GetWorld(), NPCBase->GetActorLocation(), TargetLocation)) // if path reachable
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set Explorer!"));
+		BlackboardComponent->SetValueAsVector(FName(BBKeys::TargetPosition), TargetLocation);
+		return true;
+	}
+
+	return false;
+}
+
+bool ASentinelController::IsBlocking() const
+{
+	return BlockThreatSteering->IsBlocking(NPCBase, GetPrincipal());
 }
 
 float ASentinelController::GetProtectionToSentinel(ASentinelCharacter* Sentinel) const
@@ -671,12 +709,10 @@ float ASentinelController::GetThreatToSentinel(ASentinelCharacter* Sentinel) con
 		constexpr float BaseThreat = 1000.0f;  // Adjust this as needed
 
 		ThreatLvl = BaseThreat / (Pathing->GetRemainingPathCost() + 1.0f);  // Adding 1 to avoid division by zero
-		//ThreatLvl += NPCBase->GetHealthComponent()->GetHealth() * HealthWeight;
 	}
 
-
+	ThreatLvl *= NPCBase->GetHealthComponent()->GetHealthInPercent();
 
 	UE_LOG(LogTemp, Log, TEXT("[GetThreatToSentinel] %s ThreatLvl: %f"), *NPCBase->GetName(), ThreatLvl);
-	
 	return ThreatLvl;
 }

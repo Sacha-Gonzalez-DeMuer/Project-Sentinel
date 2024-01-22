@@ -43,6 +43,8 @@ public:
 	// Call an agent to target threat
 	void RequestAssistance(ASentinelSquad* Threat);
 
+	void SendExplorers(FVector TargetLocation, int Amount = 1);
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ASquadDirectorController> SquadDirectorController;
 

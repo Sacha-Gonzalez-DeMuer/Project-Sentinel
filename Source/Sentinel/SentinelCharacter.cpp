@@ -216,3 +216,13 @@ TSet<ASentinelCharacter*> ASentinelCharacter::GetTargetedBySet() const
 {
 	return TargetedByList;
 }
+
+void ASentinelCharacter::SetRecruitArea(ARecruitingArea* area)
+{
+	RecruitingArea = area;
+}
+
+ARecruitingArea* ASentinelCharacter::GetRecruitingArea() const
+{
+	return RecruitingArea;
+}

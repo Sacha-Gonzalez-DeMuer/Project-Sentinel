@@ -36,7 +36,6 @@
  void ASquadDirectorController::Tick(float DeltaSeconds)
  {
 	Super::Tick(DeltaSeconds);
-	UE_LOG(LogTemp, Log, TEXT("directorcontrollertick"));
  	UpdatePrincipalPressure(DeltaSeconds);
  }
 
@@ -64,8 +63,6 @@
  				BlackboardComponent->SetValueAsFloat(FName(BBKeys::PressureOnPrincipal), Squad->CalculatePressure(Principal));
  				UpdatePrincipalPressureTimer = UpdatePrincipalPressureInterval;
  			}
-
- 			UpdateWeakestAgent();
  		}
  	}
  }

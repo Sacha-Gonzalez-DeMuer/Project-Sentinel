@@ -58,27 +58,31 @@ FVector UBlockThreat::CalculateSteering(const ASentinelCharacter* SteeringAgent)
 
 		return Steering;
 	}
-	
-	const FVector ToThreat = ThreatLocation - PrincipalLocation;
-    const FVector BlockingPosition = PrincipalLocation + ToThreat.GetSafeNormal() *
-	    DistanceInFrontOfPrincipal;
+
+	ASentinelSquad* SentinelSquad = SteeringAgent->GetSquad();
+
+	if(!SteeringAgent->GetSentinelController()->SquadsEnabled || !BlockOccupied(SteeringAgent, SentinelSquad))
+	{	
+		const FVector ToThreat = ThreatLocation - PrincipalLocation;
+		const FVector BlockingPosition = PrincipalLocation + ToThreat.GetSafeNormal() *
+			DistanceInFrontOfPrincipal;
+
+		Steering = Arrive(SteeringAgent, BlockingPosition, ArriveRadius);
+		Steering += CalculateAvoidance(SteeringAgent);
+		DrawDebugSphere(GetWorld(), BlockingPosition, 50.0f, 12, FColor::Red, false, -1, 0, 2.0f);
+		DrawDebugLine(GetWorld(), NPCLocation, NPCLocation + Steering, FColor::Cyan, false, -1, 0, 2.0f);
+		isBlocking = true;
+		return Steering;
+	}
+	else
+	{
+		auto Follow = SteeringAgent->GetSentinelController()->GetFollowComponent();
+		Follow->SetToFollow(Principal);
+		Follow->CalculateSteering(SteeringAgent);
+		return SteeringAgent->GetSentinelController()->GetFollowComponent()->CalculateSteering(SteeringAgent);
+	}
 
 	
-
-	Steering = Arrive(SteeringAgent, BlockingPosition, ArriveRadius);
-	Steering += CalculateAvoidance(SteeringAgent);
-	DrawDebugSphere(GetWorld(), BlockingPosition, 50.0f, 12, FColor::Red, false, -1, 0, 2.0f);
-	DrawDebugLine(GetWorld(), NPCLocation, NPCLocation + Steering, FColor::Cyan, false, -1, 0, 2.0f);
-	
-	return Steering;
-
-
-	
-	
-	
-	
-	const FVector ToPrincipal = (PrincipalLocation - NPCLocation);
-	const float SqrDistanceToPrincipal = ToPrincipal.SquaredLength();
 	
 }
 
@@ -140,6 +144,20 @@ FVector UBlockThreat::CalculateAvoidance(const ASentinelCharacter* SteeringAgent
 	return AvoidanceForce;
 }
 
+bool UBlockThreat::IsBlocking(const ASentinelCharacter* SteeringAgent, const ASentinelCharacter* Principal) const
+{
+//const FVector NPCLocation = SteeringAgent->GetActorLocation();
+//const FVector PrincipalLocation = Principal->GetActorLocation();
+//const FVector ThreatLocation = SteeringAgent->GetSentinelController()->GetThreatLocation();
+//const FVector ToThreat = ThreatLocation - PrincipalLocation;
+//const FVector BlockingPosition = PrincipalLocation + ToThreat.GetSafeNormal() *
+//DistanceInFrontOfPrincipal;
+//
+//	return FVector::DistSquared(SteeringAgent->GetActorLocation(), BlockingPosition) < 300.0f * 300.0f;
+
+	return isBlocking;
+}
+
 FVector UBlockThreat::Arrive(const ASentinelCharacter* SteeringAgent, const FVector& Target, float ArrivalRadius) const
 {
 	FVector DesiredVelocity = Target - SteeringAgent->GetActorLocation();
@@ -161,4 +179,20 @@ FVector UBlockThreat::Arrive(const ASentinelCharacter* SteeringAgent, const FVec
 	// Calculate steering force
 	return DesiredVelocity - SteeringAgent->GetMovementComponent()->Velocity;
 
+}
+
+bool UBlockThreat::BlockOccupied(const ASentinelCharacter* SteeringAgent, const ASentinelSquad* SentinelSquad) const
+{
+	TArray<ASentinelCharacter*> Allies = SentinelSquad->GetSentinels();
+	
+	for (ASentinelCharacter* Ally : Allies)
+	{
+		if(Ally ==  SteeringAgent) continue;
+		
+		if(Ally->GetSentinelController()->IsBlocking())
+		{
+			return true;
+		}
+	}
+	return false;
 }

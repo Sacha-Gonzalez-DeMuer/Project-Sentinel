@@ -15,4 +15,5 @@ namespace BBKeys
 	TCHAR const* const PressureOnPrincipal = TEXT("PressureOnPrincipal");
 	TCHAR const* const TargetToKill = TEXT("TargetToKill");
 	TCHAR const* const WeakestSentinel = TEXT("WeakSentinel");
+	TCHAR const* const TargetPosition = TEXT("TargetPosition");
 }

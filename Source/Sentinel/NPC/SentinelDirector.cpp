@@ -234,6 +234,11 @@ void ASentinelDirector::RequestAssistance(ASentinelSquad* Threat)
 	// }
 }
 
+void ASentinelDirector::SendExplorers(FVector TargetLocation, int Amount)
+{
+	
+}
+
 
 //Squad* ASentinelDirector::GetSquad(int FactionIdx, int SquadIdx) 
 //{

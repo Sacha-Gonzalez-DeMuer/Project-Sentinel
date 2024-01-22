@@ -4,7 +4,9 @@
 #include "Sentinel/NPC/AI/GuardianController.h"
 
 #include "Sentinel/SentinelCharacter.h"
+#include "Sentinel/Actors/RecruitingArea.h"
 #include "Sentinel/Components/HealthComponent.h"
+#include "Sentinel/NPC/GuardianSentinel.h"
 #include "Sentinel/NPC/NPCBase.h"
 #include "Sentinel/NPC/ZombSentinel.h"
 #include "Steering/Follow.h"
@@ -26,9 +28,15 @@ void AGuardianController::OnSeePawn(APawn* SeenPawn)
 		{
 			AddThreat(Sentinel);
 		}
-		else
+		else if (AGuardianSentinel* Guardian = Cast<AGuardianSentinel>(SeenPawn))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Guardian %s saw an unknown Sentinel: %s"), *NPCBase->GetName(), *Sentinel->GetName());
+			if(ARecruitingArea* RecArea = Guardian->GetRecruitingArea())
+			{
+				if(ASentinelSquad* Squad = NPCBase->GetSquad())
+				{
+					Squad->AddSeenRecruitArea(RecArea);
+				}
+			}
 		}
 	}
 }
